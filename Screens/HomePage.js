@@ -22,6 +22,7 @@ import hostel7 from '../assets/hostel7.png';
 import hostel8 from '../assets/hostel8.png';
 import hostel9 from '../assets/hostel9.png';
 import hostel10 from '../assets/hostel10.png';
+import BottomNavbar from './BottomNavbar';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const H_CARD_WIDTH = SCREEN_WIDTH * 0.6;
@@ -30,16 +31,16 @@ const GRID_ITEM_WIDTH = (SCREEN_WIDTH - 48) / 2;
 const GRID_ITEM_HEIGHT = GRID_ITEM_WIDTH * 0.6;
 
 const sampleHostels = [
-  { id: '1', name: 'Sri Sai PG', price: 4999, location: 'Hyderabad, Telangana', img: hostel1, distance: '0.4km', rating: 4.5 },
-  { id: '2', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel2, distance: '2.5km', rating: 4.3 },
-  { id: '3', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel3, distance: '2.5km', rating: 4.3 },
-  { id: '4', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel4, distance: '2.5km', rating: 4.3 },
-  { id: '5', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel5, distance: '2.5km', rating: 4.3 },
-  { id: '6', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel6, distance: '2.5km', rating: 4.3 },
-  { id: '7', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel7, distance: '2.5km', rating: 4.3 },
-  { id: '8', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel8, distance: '2.5km', rating: 4.3 },
-  { id: '9', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel9, distance: '2.5km', rating: 4.3 },
-  { id: '10', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel10, distance: '2.5km', rating: 4.3 },
+  { id: '1', name: 'Sri Sai PG', price: 4999, location: 'Hyderabad, Telangana', img: hostel1, distance: '0.4km', rating: 4.5, gender: 'Girls' },
+  { id: '2', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel2, distance: '2.5km', rating: 4.3, gender: 'Girls' },
+  { id: '3', name: "Raghav Boys PG", price: 4500, location: 'Hyderabad, Telangana', img: hostel3, distance: '1.5km', rating: 4.2, gender: 'Boys' },
+  { id: '4', name: "Krishna Co-living", price: 6000, location: 'Hyderabad, Telangana', img: hostel4, distance: '1.8km', rating: 4.6, gender: 'Co-living' },
+  { id: '5', name: "Kiran Boys Hostel", price: 4700, location: 'Hyderabad, Telangana', img: hostel5, distance: '2.0km', rating: 4.1, gender: 'Boys' },
+  { id: '6', name: "Megha Girls PG", price: 5100, location: 'Hyderabad, Telangana', img: hostel6, distance: '2.5km', rating: 4.4, gender: 'Girls' },
+  { id: '7', name: "Shared Stay", price: 5300, location: 'Hyderabad, Telangana', img: hostel7, distance: '2.2km', rating: 4.0, gender: 'Co-living' },
+  { id: '8', name: "Sai Boys PG", price: 4400, location: 'Hyderabad, Telangana', img: hostel8, distance: '1.7km', rating: 4.3, gender: 'Boys' },
+  { id: '9', name: "Vamsi Girls PG", price: 5200, location: 'Hyderabad, Telangana', img: hostel9, distance: '2.1km', rating: 4.5, gender: 'Girls' },
+  { id: '10', name: "Elite Co-living", price: 6200, location: 'Hyderabad, Telangana', img: hostel10, distance: '2.6km', rating: 4.6, gender: 'Co-living' },
 ];
 
 const TabButton = ({ title, active, onPress }) => (
@@ -54,6 +55,7 @@ const TabButton = ({ title, active, onPress }) => (
 export default function HomePage() {
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState('Girls');
+  const [showAllByGender, setShowAllByGender] = useState(false);
 
   const renderHorizontalItem = ({ item }) => (
     <View style={styles.hCard}>
@@ -85,12 +87,19 @@ export default function HomePage() {
     </View>
   );
 
+  // Hostels filtered by gender tab
+  const filteredHostels = sampleHostels.filter(h => h.gender === activeTab);
+  const visibleHostels = showAllByGender ? filteredHostels : filteredHostels.slice(0, 4);
+
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.pageTitle}>Home-Page</Text>
+
       <View style={styles.header}>
         <Text style={styles.locationText}>Hyderabad, Telangana</Text>
         <Ionicons name="notifications-outline" size={24} />
       </View>
+
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
         <TextInput
@@ -100,11 +109,13 @@ export default function HomePage() {
           style={styles.searchInput}
         />
       </View>
-      <ScrollView>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hostels near you</Text>
           <Text style={styles.seeAllText}>See all</Text>
         </View>
+
         <FlatList
           data={sampleHostels}
           horizontal
@@ -114,22 +125,29 @@ export default function HomePage() {
           contentContainerStyle={styles.horizontalList}
         />
 
-        <View style={[styles.sectionHeader, { marginTop: 24, marginBottom: 0 }]}> 
+        <View style={[styles.sectionHeader, { marginTop: 24, marginBottom: 0 }]}>
           <Text style={styles.sectionTitle}>Hostels For</Text>
+          <TouchableOpacity onPress={() => setShowAllByGender(true)}>
+            <Text style={styles.seeAllText}>See all</Text>
+          </TouchableOpacity>
         </View>
+
         <View style={styles.tabsContainer}>
           {['Girls', 'Boys', 'Co-living'].map(tab => (
             <TabButton
               key={tab}
               title={tab}
               active={activeTab === tab}
-              onPress={() => setActiveTab(tab)}
+              onPress={() => {
+                setActiveTab(tab);
+                setShowAllByGender(false); // reset "See all"
+              }}
             />
           ))}
         </View>
 
         <FlatList
-          data={sampleHostels}
+          data={visibleHostels}
           numColumns={2}
           keyExtractor={item => item.id}
           renderItem={renderGridItem}
@@ -141,6 +159,7 @@ export default function HomePage() {
           <Text style={styles.sectionTitle}>Featured Hostels</Text>
           <Text style={styles.seeAllText}>See all</Text>
         </View>
+
         <FlatList
           data={sampleHostels}
           keyExtractor={item => item.id}
@@ -148,12 +167,22 @@ export default function HomePage() {
           scrollEnabled={false}
         />
       </ScrollView>
+
+      <BottomNavbar />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  pageTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 16,
+    marginTop: 8,
+    marginBottom: 4,
+    color: '#aaa',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -167,8 +196,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 12,
     backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 48,
   },
   searchIcon: { marginRight: 6 },
   searchInput: { flex: 1, height: 40 },

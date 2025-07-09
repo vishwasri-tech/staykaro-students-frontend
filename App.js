@@ -8,6 +8,8 @@ import SignUp from './Screens/SignUp';
 import Login from "./Screens/Login";
 import ForgotPassword from './Screens/ForgotPassword';
 import RegisterHostel from "./Screens/RegisterHostel";
+import HomePage from "./Screens/HomePage";
+import BottomNavbar from "./Screens/BottomNavbar";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -25,6 +27,8 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
             <Stack.Screen name="RegisterHostel" component={RegisterHostel} />
+            <Stack.Screen name="HomePage" component={HomePage} />
+            <Stack.Screen name="BottomNavbar" component={BottomNavbar} />
       </Stack.Navigator>
     </NavigationContainer>
   );
