@@ -12,6 +12,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import BottomNavbar from './BottomNavbar';
+
 import hostel1 from '../assets/hostel1.png';
 import hostel2 from '../assets/hostel2.png';
 import hostel3 from '../assets/hostel3.png';
@@ -22,7 +24,6 @@ import hostel7 from '../assets/hostel7.png';
 import hostel8 from '../assets/hostel8.png';
 import hostel9 from '../assets/hostel9.png';
 import hostel10 from '../assets/hostel10.png';
-import BottomNavbar from './BottomNavbar';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const H_CARD_WIDTH = SCREEN_WIDTH * 0.6;
@@ -52,10 +53,12 @@ const TabButton = ({ title, active, onPress }) => (
   </TouchableOpacity>
 );
 
-export default function HomePage() {
+export default function HomePage({ navigation }) {
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState('Girls');
-  const [showAllByGender, setShowAllByGender] = useState(false);
+
+  const filteredHostels = sampleHostels.filter(h => h.gender === activeTab);
+  const visibleHostels = filteredHostels.slice(0, 4);
 
   const renderHorizontalItem = ({ item }) => (
     <View style={styles.hCard}>
@@ -87,19 +90,25 @@ export default function HomePage() {
     </View>
   );
 
-  // Hostels filtered by gender tab
-  const filteredHostels = sampleHostels.filter(h => h.gender === activeTab);
-  const visibleHostels = showAllByGender ? filteredHostels : filteredHostels.slice(0, 4);
+  const handleSeeAllNavigation = () => {
+    if (activeTab === 'Girls') {
+      navigation.navigate('GirlsHostelsPage');
+    } else if (activeTab === 'Boys') {
+      navigation.navigate('BoysHostelsPage');
+    } else if (activeTab === 'Co-living') {
+      navigation.navigate('CoLiving');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.pageTitle}>Home-Page</Text>
-
       <View style={styles.header}>
         <Text style={styles.locationText}>Hyderabad, Telangana</Text>
         <Ionicons name="notifications-outline" size={24} />
       </View>
 
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
         <TextInput
@@ -111,11 +120,11 @@ export default function HomePage() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+        {/* Hostels near you */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hostels near you</Text>
           <Text style={styles.seeAllText}>See all</Text>
         </View>
-
         <FlatList
           data={sampleHostels}
           horizontal
@@ -125,27 +134,27 @@ export default function HomePage() {
           contentContainerStyle={styles.horizontalList}
         />
 
-        <View style={[styles.sectionHeader, { marginTop: 24, marginBottom: 0 }]}>
+        {/* Hostels For Section */}
+        <View style={[styles.sectionHeader, { marginTop: 24 }]}>
           <Text style={styles.sectionTitle}>Hostels For</Text>
-          <TouchableOpacity onPress={() => setShowAllByGender(true)}>
+          <TouchableOpacity onPress={handleSeeAllNavigation}>
             <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Tabs */}
         <View style={styles.tabsContainer}>
           {['Girls', 'Boys', 'Co-living'].map(tab => (
             <TabButton
               key={tab}
               title={tab}
               active={activeTab === tab}
-              onPress={() => {
-                setActiveTab(tab);
-                setShowAllByGender(false); // reset "See all"
-              }}
+              onPress={() => setActiveTab(tab)}
             />
           ))}
         </View>
 
+        {/* Grid View */}
         <FlatList
           data={visibleHostels}
           numColumns={2}
@@ -155,11 +164,11 @@ export default function HomePage() {
           scrollEnabled={false}
         />
 
+        {/* Featured Hostels */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Featured Hostels</Text>
           <Text style={styles.seeAllText}>See all</Text>
         </View>
-
         <FlatList
           data={sampleHostels}
           keyExtractor={item => item.id}
@@ -238,7 +247,7 @@ const styles = StyleSheet.create({
   ratingText: { marginLeft: 4, fontSize: 12, fontWeight: '500' },
   tabsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginHorizontal: 16,
     marginVertical: 12,
   },
