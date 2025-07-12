@@ -63,79 +63,86 @@ export default function HomePage({ navigation }) {
   const filteredHostels = sampleHostels.filter(h => h.gender === activeTab);
   const visibleHostels = filteredHostels.slice(0, 4);
 
-  const renderHorizontalItem = ({ item }) => (
-    <View style={styles.hCard}>
-      <Image source={item.img} style={styles.hImage} resizeMode="cover" />
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <Text style={styles.cardSub}>{`${item.location} • ${item.distance}`}</Text>
-        <Text style={styles.cardPrice}>{`₹${item.price}/mo`}</Text>
-        <View style={styles.ratingContainer}>
-          <Ionicons name="star" size={14} color="#FFA000" />
-          <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
-        </View>
-      </View>
-    </View>
-  );
-
-  const renderGridItem = ({ item }) => (
-    <View style={styles.gCard}>
-      <Image source={item.img} style={styles.gImage} resizeMode="cover" />
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <Text style={styles.cardSub}>{`${item.location} • ${item.distance}`}</Text>
-        <Text style={styles.cardPrice}>{`₹${item.price}/mo`}</Text>
-        <View style={styles.ratingContainer}>
-          <Ionicons name="star" size={14} color="#FFA000" />
-          <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
-        </View>
-      </View>
-    </View>
-  );
-
-  const renderFeaturedCard = ({ item }) => (
-    <View style={styles.featuredCard}>
-      <Image source={item.img} style={styles.featuredImage} resizeMode="cover" />
-      <View style={styles.featuredContent}>
-        <Text style={styles.featuredTopLabel}>Nearest to Institution</Text>
-        <Text style={styles.featuredName}>
-          <Ionicons name="home-outline" size={16} /> {item.name}
-        </Text>
-        <Text style={styles.featuredSubText}>
-          <Ionicons name="business" size={14} /> PG | <Ionicons name="location-outline" size={14} /> Institution • {item.distance}
-        </Text>
-        <Text style={styles.featuredSubText}>
-          <Ionicons name="location-sharp" size={14} /> {item.location}
-        </Text>
-        <Text style={styles.featuredPrice}>₹{item.price}/month</Text>
-        <View style={styles.featuredFooter}>
-          <View style={styles.sharePill}>
-            <Text style={styles.shareText}>Available: 1 • 2 • 3 • 4 • 5 Sharing</Text>
-          </View>
-          <View style={styles.ratingRow}>
-            <Ionicons name="star" size={14} color="#FFA000" />
-            <Text style={styles.ratingText}> {item.rating.toFixed(1)} (99)</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
   const handleSeeAllNavigation = () => {
     if (activeTab === 'Girls') navigation.navigate('GirlsHostelsPage');
     if (activeTab === 'Boys') navigation.navigate('BoysHostelsPage');
     if (activeTab === 'Co-living') navigation.navigate('CoLiving');
   };
 
+  const renderHorizontalItem = ({ item }) => (
+    <TouchableOpacity onPress={() => navigation.navigate('HostelDetails', { hostel: item })}>
+      <View style={styles.hCard}>
+        <Image source={item.img} style={styles.hImage} resizeMode="cover" />
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardSub}>{`${item.location} • ${item.distance}`}</Text>
+          <Text style={styles.cardPrice}>{`₹${item.price}/mo`}</Text>
+          <View style={styles.ratingContainer}>
+            <Ionicons name="star" size={14} color="#FFA000" />
+            <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderGridItem = ({ item }) => (
+    <TouchableOpacity onPress={() => navigation.navigate('HostelDetails', { hostel: item })}>
+      <View style={styles.gCard}>
+        <Image source={item.img} style={styles.gImage} resizeMode="cover" />
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardSub}>{`${item.location} • ${item.distance}`}</Text>
+          <Text style={styles.cardPrice}>{`₹${item.price}/mo`}</Text>
+          <View style={styles.ratingContainer}>
+            <Ionicons name="star" size={14} color="#FFA000" />
+            <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderFeaturedCard = ({ item }) => (
+    <TouchableOpacity onPress={() => navigation.navigate('HostelDetails', { hostel: item })}>
+      <View style={styles.featuredCard}>
+        <Image source={item.img} style={styles.featuredImage} resizeMode="cover" />
+        <View style={styles.featuredContent}>
+          <Text style={styles.featuredTopLabel}>Nearest to Institution</Text>
+          <Text style={styles.featuredName}>
+            <Ionicons name="home-outline" size={16} /> {item.name}
+          </Text>
+          <Text style={styles.featuredSubText}>
+            <Ionicons name="business" size={14} /> PG • <Ionicons name="location-outline" size={14} /> Institution • {item.distance}
+          </Text>
+          <Text style={styles.featuredSubText}>
+            <Ionicons name="location-sharp" size={14} /> {item.location}
+          </Text>
+          <Text style={styles.featuredPrice}>₹{item.price}/month</Text>
+          <View style={styles.featuredFooter}>
+            <View style={styles.sharePill}>
+              <Text style={styles.shareText}>Available: 1 • 2 • 3 • 4 • 5 Sharing</Text>
+            </View>
+            <View style={styles.ratingRow}>
+              <Ionicons name="star" size={14} color="#FFA000" />
+              <Text style={styles.ratingText}> {item.rating.toFixed(1)} (99)</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.locationText}>Hyderabad, Telangana</Text>
+        <View style={styles.locationWrapper}>
+          <Ionicons name="location-outline" size={20} color="#000" style={styles.locationIcon} />
+          <Text style={styles.locationText}>Hyderabad, Telangana</Text>
+        </View>
         <Ionicons name="notifications-outline" size={24} style={styles.bellIcon} />
       </View>
 
-      {/* Search */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
         <TextInput
@@ -150,13 +157,15 @@ export default function HomePage({ navigation }) {
         {/* Hostels Near You */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hostels near you</Text>
-          <Text style={styles.seeAllText}>See all</Text>
+          <TouchableOpacity onPress={handleSeeAllNavigation}>
+            <Text style={styles.seeAllText}>See all</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
           data={sampleHostels}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={i => i.id}
+          keyExtractor={item => item.id}
           renderItem={renderHorizontalItem}
           contentContainerStyle={styles.horizontalList}
         />
@@ -182,7 +191,7 @@ export default function HomePage({ navigation }) {
           data={visibleHostels}
           numColumns={2}
           renderItem={renderGridItem}
-          keyExtractor={i => i.id}
+          keyExtractor={item => item.id}
           columnWrapperStyle={styles.columnWrapper}
           scrollEnabled={false}
         />
@@ -206,18 +215,17 @@ export default function HomePage({ navigation }) {
         </View>
         <FlatList
           data={sampleHostels.slice(0, 3)}
-          keyExtractor={i => i.id}
+          keyExtractor={item => item.id}
           renderItem={renderFeaturedCard}
           scrollEnabled={false}
         />
         <View style={{ alignItems: 'center', marginVertical: 12 }}>
-          <TouchableOpacity style={styles.seeAllButton}>
+          <TouchableOpacity style={styles.seeAllButton} onPress={handleSeeAllNavigation}>
             <Text style={styles.seeAllButtonText}>See all</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
       <BottomNavbar />
     </SafeAreaView>
   );
@@ -225,7 +233,6 @@ export default function HomePage({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -236,6 +243,13 @@ const styles = StyleSheet.create({
       ? (StatusBar.currentHeight || 0) + 8
       : 48,
     backgroundColor: '#fff',
+  },
+  locationWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationIcon: {
+    marginRight: 6,
   },
   locationText: { fontSize: 16, fontWeight: '600' },
   bellIcon: { marginTop: 2 },

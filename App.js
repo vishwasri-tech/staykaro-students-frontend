@@ -12,6 +12,7 @@ import HomePage from "./Screens/HomePage";
 import BottomNavbar from "./Screens/BottomNavbar";
 import BoysHostelsPage from "./Screens/BoysHostelsPage";
 import CoLiving from "./Screens/CoLiving";
+import GirlsHostelsPage from "./Screens/GirlsHostelsPage";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
             <Stack.Screen name="BottomNavbar" component={BottomNavbar} />
             <Stack.Screen name="BoysHostelsPage" component={BoysHostelsPage} />
             <Stack.Screen name="CoLiving" component={CoLiving} />
+            <Stack.Screen name="GirlsHostelsPage" component={GirlsHostelsPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
