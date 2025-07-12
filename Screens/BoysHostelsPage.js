@@ -72,7 +72,7 @@ export default function BoysHostelsPage({ navigation }) {
       {/* Header with back arrow */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#000" />
+          
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Boys Hostels</Text>
       </View>

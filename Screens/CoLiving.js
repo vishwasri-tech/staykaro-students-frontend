@@ -70,7 +70,7 @@ export default function CoLivingPage({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#000" />
+        
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Co‑living Hostels</Text>
       </View>

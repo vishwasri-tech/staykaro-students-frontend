@@ -34,8 +34,8 @@ const GRID_ITEM_WIDTH = (SCREEN_WIDTH - 48) / 2;
 const GRID_ITEM_HEIGHT = GRID_ITEM_WIDTH * 0.6;
 
 const sampleHostels = [
-  { id: '1', name: 'Sri Sai PG', price: 4999, location: 'Hyderabad, Telangana', img: hostel1, distance: '0.4km', rating: 4.5, gender: 'Girls' },
-  { id: '2', name: "Sri Depthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel2, distance: '2.5km', rating: 4.3, gender: 'Girls' },
+  { id: '1', name: 'Sri Sai Durga Womens PG', price: 4999, location: 'Hyderabad, Telangana', img: hostel1, distance: '0.4km', rating: 4.5, gender: 'Girls' },
+  { id: '2', name: "Sri Deepthi women's PG", price: 4999, location: 'Hyderabad, Telangana', img: hostel2, distance: '2.5km', rating: 4.3, gender: 'Girls' },
   { id: '3', name: "Raghav Boys PG", price: 4500, location: 'Hyderabad, Telangana', img: hostel3, distance: '1.5km', rating: 4.2, gender: 'Boys' },
   { id: '4', name: "Krishna Co-living", price: 6000, location: 'Hyderabad, Telangana', img: hostel4, distance: '1.8km', rating: 4.6, gender: 'Co-living' },
   { id: '5', name: "Kiran Boys Hostel", price: 4700, location: 'Hyderabad, Telangana', img: hostel5, distance: '2.0km', rating: 4.1, gender: 'Boys' },
@@ -118,14 +118,14 @@ export default function HomePage({ navigation }) {
           <Text style={styles.featuredSubText}>
             <Ionicons name="location-sharp" size={14} /> {item.location}
           </Text>
-          <Text style={styles.featuredPrice}>₹{item.price}/month</Text>
+          <Text style={styles.featuredPrice}>{`₹${item.price}/month`}</Text>
           <View style={styles.featuredFooter}>
             <View style={styles.sharePill}>
               <Text style={styles.shareText}>Available: 1 • 2 • 3 • 4 • 5 Sharing</Text>
             </View>
             <View style={styles.ratingRow}>
               <Ionicons name="star" size={14} color="#FFA000" />
-              <Text style={styles.ratingText}> {item.rating.toFixed(1)} (99)</Text>
+              <Text style={styles.ratingText}>{` ${item.rating.toFixed(1)} (99)`}</Text>
             </View>
           </View>
         </View>
@@ -154,10 +154,9 @@ export default function HomePage({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
-        {/* Hostels Near You */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hostels near you</Text>
-          <TouchableOpacity onPress={handleSeeAllNavigation}>
+          <TouchableOpacity>
             <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
@@ -170,12 +169,8 @@ export default function HomePage({ navigation }) {
           contentContainerStyle={styles.horizontalList}
         />
 
-        {/* Hostels For */}
-        <View style={[styles.sectionHeader, { marginTop: 24 }]}>
+        <View style={[styles.sectionHeader, { marginTop: 29 }]}>
           <Text style={styles.sectionTitle}>Hostels For</Text>
-          <TouchableOpacity onPress={handleSeeAllNavigation}>
-            <Text style={styles.seeAllText}>See all</Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.tabsContainer}>
           {['Girls', 'Boys', 'Co-living'].map(tab => (
@@ -195,8 +190,12 @@ export default function HomePage({ navigation }) {
           columnWrapperStyle={styles.columnWrapper}
           scrollEnabled={false}
         />
+        <View style={{ alignItems: 'center', marginVertical: 12 }}>
+          <TouchableOpacity style={styles.seeAllButton} onPress={handleSeeAllNavigation}>
+            <Text style={styles.seeAllButtonText}>See all</Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Featured Hostels */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Featured Hostels</Text>
         </View>
@@ -220,7 +219,7 @@ export default function HomePage({ navigation }) {
           scrollEnabled={false}
         />
         <View style={{ alignItems: 'center', marginVertical: 12 }}>
-          <TouchableOpacity style={styles.seeAllButton} onPress={handleSeeAllNavigation}>
+          <TouchableOpacity style={styles.seeAllButton}>
             <Text style={styles.seeAllButtonText}>See all</Text>
           </TouchableOpacity>
         </View>
@@ -244,16 +243,10 @@ const styles = StyleSheet.create({
       : 48,
     backgroundColor: '#fff',
   },
-  locationWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  locationIcon: {
-    marginRight: 6,
-  },
+  locationWrapper: { flexDirection: 'row', alignItems: 'center' },
+  locationIcon: { marginRight: 6 },
   locationText: { fontSize: 16, fontWeight: '600' },
   bellIcon: { marginTop: 2 },
-
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -271,7 +264,6 @@ const styles = StyleSheet.create({
   },
   searchIcon: { marginRight: 6 },
   searchInput: { flex: 1, height: 40 },
-
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -281,22 +273,20 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: '#333' },
   seeAllText: { fontSize: 14, color: '#FF0000', fontWeight: '600' },
-
   horizontalList: { paddingLeft: 16, paddingRight: 8 },
   hCard: {
     width: H_CARD_WIDTH,
     marginRight: 12,
-    borderRadius: 12,
+    borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: '#fff',
-    elevation: 4,
+    elevation: 1.5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   hImage: { width: '100%', height: H_CARD_HEIGHT },
-
   gCard: {
     width: GRID_ITEM_WIDTH,
     marginBottom: 16,
@@ -310,14 +300,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   gImage: { width: '100%', height: GRID_ITEM_HEIGHT },
-
   cardContent: { padding: 8 },
   cardTitle: { fontSize: 16, fontWeight: '600' },
   cardSub: { fontSize: 12, color: '#555', marginVertical: 4 },
   cardPrice: { fontSize: 14, fontWeight: '600', marginVertical: 2 },
   ratingContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   ratingText: { marginLeft: 4, fontSize: 12, fontWeight: '500' },
-
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -335,11 +323,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#F0F0F0',
   },
-  tabButtonActive: { backgroundColor: '#007BFF' },
+  tabButtonActive: {
+    backgroundColor: '#FF0000',
+  },
   tabText: { fontSize: 14, color: '#555' },
-  tabTextActive: { color: '#fff', fontWeight: '600' },
+  tabTextActive: {
+    color: '#fff',
+    fontWeight: '600',
+  },
   columnWrapper: { justifyContent: 'space-between', marginHorizontal: 16 },
-
   featuredTabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -352,10 +344,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#F0F0F0',
   },
-  activeFeaturedTab: { backgroundColor: '#FF0000' },
+  activeFeaturedTab: {
+    backgroundColor: '#FF0000',
+  },
   featuredTabText: { color: '#555', fontSize: 13 },
-  activeFeaturedTabText: { color: '#fff', fontWeight: '600' },
-
+  activeFeaturedTabText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
   featuredCard: {
     flexDirection: 'row',
     marginHorizontal: 16,
@@ -382,7 +378,6 @@ const styles = StyleSheet.create({
   sharePill: { backgroundColor: '#e8fbe9', paddingVertical: 2, paddingHorizontal: 8, borderRadius: 12 },
   shareText: { fontSize: 11, color: '#28a745' },
   ratingRow: { flexDirection: 'row', alignItems: 'center' },
-
-  seeAllButton: { borderWidth: 1, borderColor: '#ccc', paddingHorizontal: 20, paddingVertical: 6, borderRadius: 8 },
+  seeAllButton: { borderWidth: 1, borderColor: '#ccc', paddingHorizontal: 120, paddingVertical: 8, borderRadius: 8 },
   seeAllButtonText: { color: '#444', fontWeight: '600' },
 });
