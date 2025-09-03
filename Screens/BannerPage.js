@@ -99,8 +99,8 @@ const BannerPage = ({ navigation }) => {
 
       <StatusBar
         translucent
-        backgroundColor="#FF0202"
-        barStyle="light-content"
+        backgroundColor="#fff"
+        barStyle="dark-content"
       />
 
       <View style={styles.container}>

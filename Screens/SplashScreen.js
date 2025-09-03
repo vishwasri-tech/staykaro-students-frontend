@@ -43,10 +43,10 @@ const SplashScreen = () => {
       )}
 
       <StatusBar
-        translucent
-        backgroundColor="#FF0202"
-        barStyle="light-content"
-      />
+            translucent
+            backgroundColor="#fff"
+            barStyle="dark-content"
+          />
 
       <View style={styles.container}>
         {/* Background Shapes */}
@@ -73,7 +73,7 @@ const SplashScreen = () => {
             style={styles.roleButton}
             onPress={() => setRoleSelected('student')}
           >
-            <Text style={styles.buttonText}>Student</Text>
+            <Text style={styles.buttonText}>User</Text>
           </TouchableOpacity>
         </View>
       </View>
