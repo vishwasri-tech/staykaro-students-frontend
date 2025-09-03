@@ -26,11 +26,10 @@ const ForgotPassword = ({ navigation }) => {
       {Platform.OS === 'android' && (
         <View style={styles.statusBarBackground} />
       )}
-
-      <StatusBar
+ <StatusBar
         translucent
-        backgroundColor="#FF0202"
-        barStyle="light-content"
+        backgroundColor="#fff"
+        barStyle="dark-content"
       />
 
       <KeyboardAvoidingView
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
   },
   statusBarBackground: {
     height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    backgroundColor: '#FF0202',
+   
   },
   flexGrow: {
     flex: 1,

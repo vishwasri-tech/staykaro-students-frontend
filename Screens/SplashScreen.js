@@ -19,7 +19,7 @@ import {
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const [roleSelected, setRoleSelected] = useState(null); // null | 'owner' | 'student'
+  const [roleSelected, setRoleSelected] = useState(null); 
 
   useEffect(() => {
     if (roleSelected) {
@@ -84,11 +84,10 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FF0202',
+   
   },
   statusBarBackground: {
     height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    backgroundColor: '#FF0202',
   },
   container: {
     flex: 1,

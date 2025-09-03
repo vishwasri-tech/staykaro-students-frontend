@@ -26,11 +26,11 @@ const Login = ({ navigation }) => {
         <View style={styles.statusBarBackground} />
       )}
 
-      <StatusBar
-        translucent
-        backgroundColor="#FF0202"
-        barStyle="light-content"
-      />
+     <StatusBar
+            translucent
+            backgroundColor="#fff"
+            barStyle="dark-content"
+          />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
