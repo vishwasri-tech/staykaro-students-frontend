@@ -32,14 +32,14 @@ export default function HomePage() {
   // ✅ Hostel data categorized
   const hostelsData = {
     boys: [
-      { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/hostel1.png") },
+      { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/cl1.png") },
       { id: "2", name: "French Hostel", price: "₹5500.00", rating: 4.8, image: require("../assets/hostel2.png") },
       { id: "3", name: "Elite Hostel", price: "₹6000.00", rating: 4.7, image: require("../assets/hostel3.png") },
     ],
     girls: [
-      { id: "4", name: "Grace Hostel", price: "₹5000.00", rating: 4.6, image: require("../assets/hostel1.png") },
-      { id: "5", name: "Queen Hostel", price: "₹5200.00", rating: 4.9, image: require("../assets/hostel2.png") },
-      { id: "6", name: "Elite Girls Hostel", price: "₹5300.00", rating: 4.7, image: require("../assets/hostel3.png") },
+      { id: "4", name: "Grace Hostel", price: "₹5000.00", rating: 4.6, image: require("../assets/boys1.png") },
+      { id: "5", name: "Queen Hostel", price: "₹5200.00", rating: 4.9, image: require("../assets/boys2.png") },
+      { id: "6", name: "Elite Girls Hostel", price: "₹5300.00", rating: 4.7, image: require("../assets/boys3.png") },
     ],
     coliving: [
       { id: "7", name: "Modern Living", price: "₹6200.00", rating: 4.9, image: require("../assets/hostel1.png") },
@@ -57,10 +57,10 @@ export default function HomePage() {
 
   // ✅ Nearby Hostels Data
   const nearbyHostels = [
-    { id: "10", name: "Sri Sai Hostel", location: "Begumpet, Hyd", price: "₹4800.00", rating: 4.8, image: require("../assets/hostel1.png") },
-    { id: "11", name: "Shanthi Hostel", location: "Ameerpet, Hyd", price: "₹5300.00", rating: 4.8, image: require("../assets/hostel2.png") },
-    { id: "12", name: "BlueSky Hostel", location: "Madhapur, Hyd", price: "₹5000.00", rating: 4.6, image: require("../assets/hostel3.png") },
-    { id: "13", name: "Sunrise Hostel", location: "Kukatpally, Hyd", price: "₹5500.00", rating: 4.7, image: require("../assets/hostel4.png") },
+    { id: "10", name: "Sri Sai Hostel", location: "Begumpet, Hyd", price: "₹4800.00", rating: 4.8, image: require("../assets/gh3.png") },
+    { id: "11", name: "Shanthi Hostel", location: "Ameerpet, Hyd", price: "₹5300.00", rating: 4.8, image: require("../assets/gh5.png") },
+    { id: "12", name: "BlueSky Hostel", location: "Madhapur, Hyd", price: "₹5000.00", rating: 4.6, image: require("../assets/gh6.png") },
+    { id: "13", name: "Sunrise Hostel", location: "Kukatpally, Hyd", price: "₹5500.00", rating: 4.7, image: require("../assets/gh7.png") },
   ];
 
   const [showAllNearby, setShowAllNearby] = useState(false);
