@@ -20,7 +20,7 @@ export default function BottomNavBar() {
       {/* Clock */}
       <TouchableOpacity style={styles.iconContainer}>
         <Image
-          source={require("../assets/Home.png")}
+          source={require("../assets/clock.png")}
           style={styles.icon}
           resizeMode="contain"
         />
@@ -29,7 +29,7 @@ export default function BottomNavBar() {
       {/* Map */}
       <TouchableOpacity style={styles.iconContainer}>
         <Image
-          source={require("../assets/profile.png")}
+          source={require("../assets/fold.png")}
           style={styles.icon}
           resizeMode="contain"
         />
