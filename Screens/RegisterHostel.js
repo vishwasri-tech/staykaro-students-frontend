@@ -85,10 +85,13 @@ const RegisterHostel = ({ navigation }) => {
               </View>
             </View>
 
-            {/* Register Button */}
-            <TouchableOpacity style={styles.registerButton}>
-              <Text style={styles.registerText}>Register Hostel</Text>
-            </TouchableOpacity>
+           <TouchableOpacity
+  style={styles.registerButton}
+  onPress={() => navigation.navigate('Admin')}
+>
+          <Text style={styles.registerText}>Register Hostel</Text>
+</TouchableOpacity>
+
 
             {/* Google Sign Up */}
             <TouchableOpacity style={styles.googleButton}>

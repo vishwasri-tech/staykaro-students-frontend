@@ -29,11 +29,9 @@ export default function BottomNavBar() {
       {/* Map */}
       <TouchableOpacity style={styles.iconContainer}>
         <Image
-<<<<<<< HEAD
+
           source={require("../assets/fold.png")}
-=======
-          source={require("../assets/Profile.png")}
->>>>>>> b43af61 (--)
+
           style={styles.icon}
           resizeMode="contain"
         />
