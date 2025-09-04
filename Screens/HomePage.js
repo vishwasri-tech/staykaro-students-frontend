@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 import React, { useState } from "react";
 import {
   View,
@@ -14,6 +23,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import BottomNavBar from "./BottomNavbar";
+import FilterModal from "./FilterModal"; // ✅ import modal
 
 export default function HomePage() {
   // ✅ Hostel data categorized
@@ -53,6 +63,9 @@ export default function HomePage() {
   const [showAllNearby, setShowAllNearby] = useState(false);
   const displayedNearby = showAllNearby ? nearbyHostels : nearbyHostels.slice(0, 2);
 
+  // ✅ State for Filter Modal
+  const [filterVisible, setFilterVisible] = useState(false);
+
   return (
     <View style={styles.mainContainer}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -76,7 +89,7 @@ export default function HomePage() {
         <View style={styles.searchBar}>
           <Image source={require("../assets/search.png")} style={styles.iconSmall} />
           <TextInput placeholder="Search hostel" style={styles.searchInput} placeholderTextColor="#999" />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setFilterVisible(true)}>
             <Image source={require("../assets/filter.png")} style={styles.iconSmall} />
           </TouchableOpacity>
         </View>
@@ -152,12 +165,15 @@ export default function HomePage() {
 
       {/* ✅ Bottom Navbar Fixed */}
       <BottomNavBar />
+
+      {/* ✅ Filter Modal */}
+      <FilterModal visible={filterVisible} onClose={() => setFilterVisible(false)} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-   mainContainer: {
+  mainContainer: {
     flex: 1,
     backgroundColor: "#fff",
   },
@@ -207,7 +223,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("3%"),
     marginHorizontal: wp("5%"),
     marginBottom: hp("2%"),
-     paddingVertical: hp("1%"),
+    paddingVertical: hp("1%"),
   },
   searchInput: {
     flex: 1,
@@ -265,7 +281,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: wp("2%"),
-    // backgroundColor: "rgba(0,0,0,0.4)",
   },
   overlayName: {
     color: "#fff",
@@ -294,7 +309,6 @@ const styles = StyleSheet.create({
   nearbyCard: {
     flexDirection: "row",
     alignItems: "center",
-    // backgroundColor: "#fafafa",
     padding: wp("3%"),
     marginHorizontal: wp("5%"),
     marginVertical: hp("1%"),
@@ -328,3 +342,4 @@ const styles = StyleSheet.create({
     tintColor: "#000",
   },
 });
+
