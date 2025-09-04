@@ -1,5 +1,5 @@
 // Screens/HostelDetails.js
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -8,15 +8,25 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Modal,
+  Dimensions,
+  SafeAreaView,
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { useNavigation, useRoute } from "@react-navigation/native";
+
+const { width: WINDOW_WIDTH } = Dimensions.get("window");
 
 export default function HostelDetails() {
   const navigation = useNavigation();
   const route = useRoute();
   const hostel = route.params?.hostel;
   const [saved, setSaved] = useState(false);
+
+  // modal viewer state
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
+  const scrollRef = useRef(null);
 
   if (!hostel) {
     return (
@@ -29,50 +39,101 @@ export default function HostelDetails() {
     );
   }
 
-  // single bookmark asset (make sure this file exists in ./assets/bookmark.png)
+  // assets
   const bookmarkIcon = require("../assets/bookmark.png");
+  const locFrame = require("../assets/locframe.png"); // circular frame icon (kept on right)
+  const locPin = require("../assets/location.png"); // inline pin icon (left of location text)
+
+  // gallery data fallback
+  const gallery = Array.isArray(hostel.gallery) && hostel.gallery.length > 0
+    ? hostel.gallery
+    : [hostel.image, hostel.image, hostel.image, hostel.image, hostel.image];
+
+  const THUMB_COUNT = 4;
+
+  function openViewer(index = 0) {
+    setViewerIndex(index);
+    setViewerVisible(true);
+    setTimeout(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({ x: WINDOW_WIDTH * index, animated: false });
+      }
+    }, 50);
+  }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: hp("14%") }} showsVerticalScrollIndicator={false}>
-        {/* Top image */}
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={{ paddingBottom: hp("16%") }} showsVerticalScrollIndicator={false}>
+        {/* Top image (hero) */}
         <Image source={hostel.image} style={styles.topImage} />
 
         {/* Info card */}
         <View style={styles.infoCard}>
-        
+          <View style={styles.headerRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.name}>{hostel.name}</Text>
 
-          <Text style={styles.name}>{hostel.name}</Text>
-          {hostel.location ? <Text style={styles.location}>📍 {hostel.location}</Text> : null}
+              {/* Inline location: pin icon + text */}
+              <View style={styles.locationInline}>
+                <Image source={locPin} style={styles.locIconSmall} />
+                <Text style={styles.locationText}>{hostel.location ?? "Begumpet, Hyderabad"}</Text>
+              </View>
 
-          <View style={styles.row}>
-            <Text style={styles.rating}>⭐ {hostel.rating}</Text>
-            <Text style={styles.reviews}> • 1231 Reviews</Text>
+              {/* rating */}
+              <View style={styles.ratingRow}>
+                <View style={styles.starsRow}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Text
+                      key={i}
+                      style={[
+                        styles.star,
+                        i < Math.round(hostel.rating) ? styles.starActive : styles.starInactive,
+                      ]}
+                    >
+                      ★
+                    </Text>
+                  ))}
+                </View>
+                <Text style={styles.ratingNumber}>{hostel.rating}</Text>
+                <Text style={styles.reviews}> · 1231 Reviews</Text>
+              </View>
+            </View>
+
+            {/* circular right icon (optional) */}
+            <TouchableOpacity style={styles.avatarBtn} activeOpacity={0.9}>
+              <Image source={locFrame} style={styles.avatarImage} />
+            </TouchableOpacity>
           </View>
 
-          {/* Price */}
-          
-
           <Text style={styles.sectionTitle}>Description</Text>
-          <Text style={styles.description}>
+          <Text style={styles.description} numberOfLines={3}>
             {hostel.description ||
-              "Comfortable rooms, clean mess, high-speed WiFi and 24/7 security. Ideal for students and working professionals."}
+              "Hostel means a residential facility designed to provide accommodation to students or individuals, consisting of rooms, common areas."}
           </Text>
+          <TouchableOpacity onPress={() => Alert.alert("Read more", hostel.description || "No more text")}>
+            <Text style={styles.readMore}>Read more</Text>
+          </TouchableOpacity>
 
-          <Text style={[styles.sectionTitle, { marginTop: hp("2%") }]}></Text>
+          {/* Gallery */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryRow}>
-            {[hostel.image, hostel.image, hostel.image].map((img, idx) => (
-              <Image key={idx} source={img} style={styles.galleryImage} />
-            ))}
-            <View style={[styles.galleryImage, styles.moreBox]}>
-              <Text style={styles.moreText}>+5</Text>
-            </View>
+            {gallery.slice(0, THUMB_COUNT).map((img, idx) => {
+              const isLastShown = idx === THUMB_COUNT - 1 && gallery.length > THUMB_COUNT;
+              return (
+                <TouchableOpacity key={idx} activeOpacity={0.85} onPress={() => openViewer(idx)}>
+                  <Image source={img} style={styles.galleryImage} />
+                  {isLastShown && (
+                    <View style={styles.moreOverlay}>
+                      <Text style={styles.moreOverlayText}>+{gallery.length - THUMB_COUNT}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
-
         </View>
       </ScrollView>
 
-      {/* Sticky footer: left = Save (bookmark.png), right = Book Now */}
+      {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={[styles.saveBtn, saved && styles.saveBtnActive]}
@@ -80,7 +141,7 @@ export default function HostelDetails() {
             setSaved((s) => !s);
             Alert.alert(saved ? "Removed from saved" : "Saved", `${hostel.name} ${saved ? "removed" : "saved"}`);
           }}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
           <Image source={bookmarkIcon} style={styles.saveIcon} resizeMode="contain" />
         </TouchableOpacity>
@@ -95,62 +156,113 @@ export default function HostelDetails() {
           <Text style={styles.bookText}>Book now</Text>
         </TouchableOpacity>
       </View>
-    </View>
+
+      {/* Viewer modal */}
+      <Modal visible={viewerVisible} animationType="fade" transparent={false}>
+        <SafeAreaView style={viewerStyles.modalContainer}>
+          <View style={viewerStyles.topBar}>
+            <TouchableOpacity onPress={() => setViewerVisible(false)} style={viewerStyles.closeBtn}>
+              <Text style={viewerStyles.closeTxt}>Close</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView
+            horizontal
+            pagingEnabled
+            ref={scrollRef}
+            showsHorizontalScrollIndicator={false}
+            contentOffset={{ x: WINDOW_WIDTH * viewerIndex, y: 0 }}
+          >
+            {gallery.map((img, i) => (
+              <View style={{ width: WINDOW_WIDTH, alignItems: "center", justifyContent: "center" }} key={i}>
+                <Image source={img} style={viewerStyles.fullImage} resizeMode="contain" />
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#efefef" },
   topImage: { width: "100%", height: hp("34%") },
   infoCard: {
     backgroundColor: "#fff",
-    marginTop: -hp("6%"),
-    borderTopLeftRadius: wp("6%"),
-    borderTopRightRadius: wp("6%"),
+    marginTop: -hp("4%"),
+    marginHorizontal: wp("3%"),
+    borderRadius: wp("6%"),
     padding: wp("5%"),
-    minHeight: hp("50%"),
-    elevation: 3,
+    minHeight: hp("52%"),
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 30,
+    overflow: "hidden",
   },
 
+  headerRow: { flexDirection: "row", alignItems: "center" },
+  name: { fontSize: wp("6.4%"), fontWeight: "800", color: "#0b0b0b", marginBottom: hp("0.3%") },
 
-  name: { fontSize: wp("6%"), fontWeight: "700", marginBottom: hp("0.4%") },
-  location: { color: "#666", marginBottom: hp("0.6%") },
-  row: { flexDirection: "row", alignItems: "center", marginBottom: hp("0.6%") },
-  rating: { color: "#f5a623", fontSize: wp("4%"), fontWeight: "600" },
-  reviews: { color: "#666", fontSize: wp("3.6%") },
-  price: { color: "red", fontSize: wp("5%"), fontWeight: "700", marginTop: hp("0.6%") },
+  /* inline location: pin icon + text */
+  locationInline: { flexDirection: "row", alignItems: "center", marginBottom: hp("0.6%") },
+  locIconSmall: { width: wp("4.2%"), height: wp("4.2%"), resizeMode: "contain", tintColor: "#9b9b9b", marginRight: wp("2%") },
+  locationText: { color: "#9b9b9b", fontSize: wp("3.8%") },
 
-  sectionTitle: { fontSize: wp("4.6%"), fontWeight: "600", marginTop: hp("1.2%") },
-  description: { fontSize: wp("3.8%"), color: "#444", marginTop: hp("0.6%"), lineHeight: hp("2.5%") },
+  ratingRow: { flexDirection: "row", alignItems: "center", marginTop: hp("0.4%") },
+  starsRow: { flexDirection: "row" },
+  star: { fontSize: wp("4%"), marginRight: wp("0.6%") },
+  starActive: { color: "#ffb400" },
+  starInactive: { color: "#e6e6e6" },
+  ratingNumber: { fontSize: wp("3.8%"), fontWeight: "700", marginLeft: wp("2%") },
+  reviews: { color: "#9b9b9b", fontSize: wp("3.6%"), marginLeft: wp("2%") },
 
-  galleryRow: { marginTop: hp("1%"), marginBottom: hp("1%") },
-  galleryImage: { width: wp("28%"), height: hp("14%"), borderRadius: wp("2%"), marginRight: wp("3%") },
-  moreBox: { backgroundColor: "#e0e0e0", alignItems: "center", justifyContent: "center" },
-  moreText: { fontSize: wp("5%"), fontWeight: "700", color: "#444" },
+ 
 
+  avatarImage: { width: wp("12%"), height: wp("12%"), resizeMode: "contain" },
 
+  sectionTitle: { fontSize: wp("4.8%"), fontWeight: "700", marginTop: hp("2%"), marginBottom: hp("1%") },
+  description: { fontSize: wp("3.8%"), color: "#444", lineHeight: hp("2.6%") },
+  readMore: { color: "#0b76ff", marginTop: hp("1%"), fontWeight: "700" },
+
+  galleryRow: { marginTop: hp("2%"), marginBottom: hp("2%") },
+  galleryImage: {
+    width: wp("20%"),
+    height: wp("20%"),
+    borderRadius: wp("3.5%"),
+    marginRight: wp("3%"),
+  },
+  moreOverlay: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: wp("20%"),
+    height: wp("20%"),
+    borderRadius: wp("3.5%"),
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  moreOverlayText: { color: "#fff", fontWeight: "800", fontSize: wp("5%") },
 
   footer: {
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: hp("10%"),
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
+    bottom: hp("5%"),
+    left: wp("4%"),
+    right: wp("4%"),
+    height: hp("9%"),
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: wp("4%"),
   },
 
-  // Save button (matches screenshot)
   saveBtn: {
     width: wp("12%"),
     height: wp("12%"),
     borderRadius: wp("6%"),
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#eee",
     alignItems: "center",
     justifyContent: "center",
     marginRight: wp("4%"),
@@ -158,30 +270,42 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  saveBtnActive: {
-    borderColor: "red",
-    backgroundColor: "#fff0f0",
-  },
-  saveIcon: {
-    width: wp("6%"),
-    height: wp("6%"),
-  },
+  saveBtnActive: { borderColor: "#ff0b2d", backgroundColor: "#fff6f6" },
+  saveIcon: { width: wp("6%"), height: wp("6%") },
 
   bookBtn: {
     flex: 1,
-    backgroundColor: "red",
-    paddingVertical: hp("1.6%"),
-    borderRadius: wp("3%"),
+    backgroundColor: "#ff0b2d",
+    paddingVertical: hp("1.2%"),
+    borderRadius: wp("6%"),
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 18,
+    elevation: 8,
   },
-  bookText: { color: "#fff", fontSize: wp("4.6%"), fontWeight: "700" },
+  bookText: { color: "#fff", fontSize: wp("4.6%"), fontWeight: "800" },
 
   emptyContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
   emptyText: { fontSize: wp("4%"), marginBottom: hp("2%") },
-  goBackBtn: { backgroundColor: "red", padding: 12, borderRadius: 8 },
+  goBackBtn: { backgroundColor: "#ff0b2d", padding: 12, borderRadius: 8 },
   goBackText: { color: "#fff" },
+});
+
+/* Viewer modal styles */
+const viewerStyles = StyleSheet.create({
+  modalContainer: { flex: 1, backgroundColor: "#000" },
+  topBar: {
+    height: hp("8%"),
+    justifyContent: "center",
+    paddingHorizontal: wp("4%"),
+  },
+  closeBtn: { alignSelf: "flex-end", padding: 8 },
+  closeTxt: { color: "#fff", fontSize: wp("4%"), fontWeight: "700" },
+  fullImage: { width: WINDOW_WIDTH, height: hp("80%") },
 });
