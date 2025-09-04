@@ -38,7 +38,7 @@ export default function BottomNavBar() {
       {/* Profile */}
       <TouchableOpacity style={styles.iconContainer}>
         <Image
-          source={require("../assets/profile.png")}
+          source={require("../assets/Profile.png")}
           style={styles.icon}
           resizeMode="contain"
         />

@@ -22,10 +22,13 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { useNavigation } from "@react-navigation/native"; // <-- added
 import BottomNavBar from "./BottomNavbar";
 import FilterModal from "./FilterModal"; // ✅ import modal
 
 export default function HomePage() {
+  const navigation = useNavigation(); // <-- added
+
   // ✅ Hostel data categorized
   const hostelsData = {
     boys: [
@@ -77,7 +80,7 @@ export default function HomePage() {
             <Image source={require("../assets/down-arrow.png")} style={[styles.iconSmall, { marginLeft: wp("2%") }]} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Image source={require("../assets/bell.png")} style={styles.iconSmall} />
+            <Image source={require("../assets/Bell.png")} style={styles.iconSmall} />
           </TouchableOpacity>
         </View>
 
@@ -87,7 +90,7 @@ export default function HomePage() {
 
         {/* Search Bar */}
         <View style={styles.searchBar}>
-          <Image source={require("../assets/search.png")} style={styles.iconSmall} />
+          <Image source={require("../assets/Search.png")} style={styles.iconSmall} />
           <TextInput placeholder="Search hostel" style={styles.searchInput} placeholderTextColor="#999" />
           <TouchableOpacity onPress={() => setFilterVisible(true)}>
             <Image source={require("../assets/filter.png")} style={styles.iconSmall} />
@@ -129,14 +132,18 @@ export default function HomePage() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: wp("4%") }}
           renderItem={({ item }) => (
-            <View style={styles.topHostelCard}>
+            <TouchableOpacity
+              style={styles.topHostelCard}
+              onPress={() => navigation.navigate("HostelDetails", { hostel: item })}
+              activeOpacity={0.9}
+            >
               <Image source={item.image} style={styles.topHostelImage} />
               <View style={styles.overlay}>
                 <Text style={styles.overlayName}>{item.name}</Text>
                 <Text style={styles.overlayPrice}>{item.price}</Text>
                 <Text style={styles.overlayRating}>⭐ {item.rating}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
 
@@ -149,7 +156,12 @@ export default function HomePage() {
         </View>
 
         {displayedNearby.map((item) => (
-          <View key={item.id} style={styles.nearbyCard}>
+          <TouchableOpacity
+            key={item.id}
+            style={styles.nearbyCard}
+            onPress={() => navigation.navigate("HostelDetails", { hostel: item })}
+            activeOpacity={0.9}
+          >
             <Image source={item.image} style={styles.nearbyImage} />
             <View style={{ flex: 1, marginLeft: wp("3%") }}>
               <Text style={styles.nearbyName}>{item.name}</Text>
@@ -159,7 +171,7 @@ export default function HomePage() {
               <Text style={styles.nearbyPrice}>{item.price}</Text>
               <Text style={styles.hostelRating}>⭐ {item.rating}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
