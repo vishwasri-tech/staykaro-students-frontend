@@ -142,11 +142,11 @@ const BannerPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FF0202',
+    // backgroundColor: '#FF0202',
   },
   statusBarBackground: {
     height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    backgroundColor: '#FF0202',
+    // backgroundColor: '#FF0202',
   },
   container: {
     flex: 1,

@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   statusBarBackground: {
     height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    backgroundColor: '#FF0202',
+    // backgroundColor: '#FF0202',
   },
   flexGrow: {
     flex: 1,
