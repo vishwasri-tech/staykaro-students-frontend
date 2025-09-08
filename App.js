@@ -15,6 +15,13 @@ import Admin from './Screens/Admin';
 import AdminNavbar from './Screens/AdminNavbar';
 import HostelForm from './Screens/HostelForm';
 import StudentApplication from './Screens/StudentApplication';
+import SplashScreen from "./Screens/SplashScreen";
+import BannerPage from "./Screens/BannerPage";
+import SignUp from "./Screens/SignUp";
+import Login from "./Screens/Login";
+import ForgotPassword from "./Screens/ForgotPassword";
+import RegisterHostel from "./Screens/RegisterHostel";
+import HomePage from "./Screens/HomePage";  
 const Stack = createNativeStackNavigator();
 
 export default function App() {
