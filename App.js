@@ -19,7 +19,7 @@ import HomePage from './Screens/HomePage';
 import BottomNavbar from './Screens/BottomNavbar';
 import Admin from './Screens/Admin';
 import AdminNavbar from './Screens/AdminNavbar';
-
+import HostelForm from './Screens/HostelForm';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -46,6 +46,7 @@ export default function App() {
         <Stack.Screen name="BottomNavbar" component={BottomNavbar} />
         <Stack.Screen name="Admin" component={Admin} />
         <Stack.Screen name="AdminNavbar" component={AdminNavbar} />
+        <Stack.Screen name='HostelForm' component={HostelForm}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

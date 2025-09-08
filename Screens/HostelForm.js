@@ -1,0 +1,375 @@
+import React, { useState } from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { Button } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
+
+const { width } = Dimensions.get('window');
+
+const facilitiesList = ['Wi-fi', 'Mess', 'Laundry', 'Water Heater', 'CCTV'];
+const hostelTypes = ['Boys', 'Girls', 'Co-ed'];
+
+export default function HostelForm() {
+  const [form, setForm] = useState({
+    name: '',
+    type: '',
+    address: '',
+    roomRent: '',
+    messFee: '',
+    cautionDeposit: '',
+    totalFloors: '',
+    roomsPerFloor: '',
+    facilities: [],
+  });
+
+  const toggleFacility = (facility) => {
+    setForm((prev) => {
+      const facilities = prev.facilities.includes(facility)
+        ? prev.facilities.filter((f) => f !== facility)
+        : [...prev.facilities, facility];
+      return { ...prev, facilities };
+    });
+  };
+
+  const handleReset = () => {
+    setForm({
+      name: '',
+      type: '',
+      address: '',
+      roomRent: '',
+      messFee: '',
+      cautionDeposit: '',
+      totalFloors: '',
+      roomsPerFloor: '',
+      facilities: [],
+    });
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      behavior={Platform.OS === 'android' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 10 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.header}>ADD/EDIT HOSTEL</Text>
+
+        {/* Hostel Name */}
+        <Text style={styles.label}>Hostel Name</Text>
+        <TextInput
+          style={styles.input}
+          value={form.name}
+          onChangeText={(text) => setForm({ ...form, name: text })}
+          placeholder="Enter hostel name"
+          returnKeyType="done"
+        />
+
+        {/* Hostel Type Dropdown */}
+        <Text style={styles.label}>Hostel Type</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={form.type}
+            onValueChange={(value) => setForm({ ...form, type: value })}
+            style={styles.picker}
+            dropdownIconColor="#888"
+          >
+            <Picker.Item label="Type of Hostel" value="" enabled={false} />
+            {hostelTypes.map((type) => (
+              <Picker.Item key={type} label={type} value={type} />
+            ))}
+          </Picker>
+        </View>
+
+        {/* Address */}
+        <Text style={styles.label}>Address</Text>
+        <TextInput
+          style={styles.input}
+          value={form.address}
+          onChangeText={(text) => setForm({ ...form, address: text })}
+          placeholder="Address"
+          multiline
+          numberOfLines={3}
+          returnKeyType="done"
+        />
+
+        {/* Facilities */}
+        <Text style={styles.label}>Facilities</Text>
+        <View style={styles.facilitiesContainer}>
+          {facilitiesList.map((facility) => (
+            <TouchableOpacity
+              key={facility}
+              style={styles.facilityRow}
+              onPress={() => toggleFacility(facility)}
+              activeOpacity={0.7}
+            >
+              <View
+                style={[
+                  styles.checkboxBox,
+                  form.facilities.includes(facility) && styles.checkboxBoxSelected,
+                ]}
+              />
+              <Text style={styles.facilityText}>{facility}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Fee Details */}
+        <Text style={styles.label}>Fee Details</Text>
+        <View style={styles.feeBox}>
+          <View style={styles.feeRow}>
+            <Text style={styles.feeLabel}>Room Rent</Text>
+            <TextInput
+              style={styles.feeInput}
+              value={form.roomRent}
+              onChangeText={(text) => setForm({ ...form, roomRent: text })}
+              keyboardType="default"
+              returnKeyType="done"
+            />
+          </View>
+          <View style={styles.feeRow}>
+            <Text style={styles.feeLabel}>Mess Fee</Text>
+            <TextInput
+              style={styles.feeInput}
+              value={form.messFee}
+              onChangeText={(text) => setForm({ ...form, messFee: text })}
+              keyboardType="default"
+              returnKeyType="done"
+            />
+          </View>
+          <View style={styles.feeRow}>
+            <Text style={styles.feeLabel}>Caution Deposit</Text>
+            <TextInput
+              style={styles.feeInput}
+              value={form.cautionDeposit}
+              onChangeText={(text) => setForm({ ...form, cautionDeposit: text })}
+              keyboardType="default"
+              returnKeyType="done"
+            />
+          </View>
+        </View>
+
+        {/* Room Structure */}
+        <Text style={styles.label}>Room Structure</Text>
+        <View style={styles.structureRow}>
+          <View style={styles.structureCol}>
+            <Text style={styles.structureLabel}>Total Floors</Text>
+            <TextInput
+              style={styles.structureInput}
+              value={form.totalFloors}
+              onChangeText={(text) => setForm({ ...form, totalFloors: text })}
+              keyboardType="default"
+              returnKeyType="done"
+              maxLength={3}
+            />
+          </View>
+          <View style={styles.structureCol}>
+            <Text style={styles.structureLabel}>Rooms per Floor</Text>
+            <TextInput
+              style={styles.structureInput}
+              value={form.roomsPerFloor}
+              onChangeText={(text) => setForm({ ...form, roomsPerFloor: text })}
+              keyboardType="default"
+              returnKeyType="done"
+              maxLength={3}
+            />
+          </View>
+        </View>
+
+        {/* Room Images */}
+        <View style={styles.imageRow}>
+          <Image
+            source={require('../assets/add-hostel1.png')}
+            style={styles.roomImage}
+          />
+          <Image
+            source={require('../assets/add-hostel2.png')}
+            style={styles.roomImage}
+          />
+        </View>
+
+        {/* Buttons */}
+        <View style={styles.buttonRow}>
+          <Button
+            mode="contained"
+            onPress={() => console.log(form)}
+            style={styles.saveButton}
+            labelStyle={styles.buttonLabel}
+          >
+            Save
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleReset}
+            style={styles.resetButton}
+            labelStyle={styles.buttonLabel}
+          >
+            Reset
+          </Button>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    paddingBottom: 60,
+    backgroundColor: '#fff',
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    marginTop: 30,
+  },
+  label: {
+    marginTop: 15,
+    marginBottom: 5,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    backgroundColor: '#f2f2f2',
+    fontSize: 14,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    backgroundColor: '#f2f2f2',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  facilitiesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+  },
+  facilityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+    marginBottom: 10,
+  },
+  checkboxBox: {
+    width: 22,
+    height: 22,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    backgroundColor: '#f2f2f2',
+    marginRight: 8,
+  },
+  checkboxBoxSelected: {
+    backgroundColor: '#aaa',
+  },
+  facilityText: {
+    fontSize: 14,
+  },
+  feeBox: {
+    backgroundColor: '#f4f4f4',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 10,
+  },
+  feeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  feeLabel: {
+    width: 110,
+    fontSize: 13,
+    lineHeight: 16,
+  },
+  feeInput: {
+    flex: 1,
+    height: 36,
+    backgroundColor: '#d3d3d3',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    borderWidth: 0,
+    fontSize: 14,
+  },
+  structureRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  structureCol: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  structureLabel: {
+    fontSize: 14,
+    marginRight: 10,
+    width: 110,
+  },
+  structureInput: {
+    flex: 1,
+    height: 46,
+    backgroundColor: '#f7f7f7',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    fontSize: 14,
+  },
+  imageRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  roomImage: {
+    width: width * 0.35,
+    height: width * 0.25,
+    marginTop: 15,
+    borderRadius: 15,
+    resizeMode: 'cover',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 25,
+  },
+  saveButton: {
+    flex: 1,
+    marginRight: 10,
+    backgroundColor: '#f66',
+    borderRadius: 8,
+    paddingVertical: 5,
+  },
+  resetButton: {
+    flex: 1,
+    backgroundColor: '#f66',
+    borderRadius: 8,
+    paddingVertical: 5,
+  },
+  buttonLabel: {
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});

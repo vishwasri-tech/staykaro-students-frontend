@@ -24,7 +24,7 @@ const AdminNavbar = () => {
         />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Admin2')}>
+      <TouchableOpacity onPress={() => navigation.navigate('HostelForm')}>
         <MaterialIcons
           name="add-box"
           size={wp('6%')}
