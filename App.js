@@ -8,14 +8,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HostelDetails from "./Screens/HostelDetails";
 
 
-// Screens
-import SplashScreen from './Screens/SplashScreen';
-import BannerPage from './Screens/BannerPage';
-import SignUp from './Screens/SignUp';
-import Login from './Screens/Login';
-import ForgotPassword from './Screens/ForgotPassword';
-import RegisterHostel from './Screens/RegisterHostel';
-import HomePage from './Screens/HomePage';
+
+
 import BottomNavbar from './Screens/BottomNavbar';
 import Admin from './Screens/Admin';
 import AdminNavbar from './Screens/AdminNavbar';
@@ -40,7 +34,7 @@ export default function App() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="RegisterHostel" component={RegisterHostel} />
 
-        
+
         {/* Hostel details screen (opened from HomePage) */}
         <Stack.Screen name="HostelDetails" component={HostelDetails} />
         <Stack.Screen name="HomePage" component={HomePage} />
