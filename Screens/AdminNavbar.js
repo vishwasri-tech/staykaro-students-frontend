@@ -32,7 +32,7 @@ const AdminNavbar = () => {
         />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Admin3')}>
+      <TouchableOpacity onPress={() => navigation.navigate('StudentApplication')}>
         <MaterialIcons
           name="assignment"
           size={wp('6%')}

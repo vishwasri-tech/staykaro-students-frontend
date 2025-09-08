@@ -115,12 +115,11 @@ export default function HostelForm() {
               onPress={() => toggleFacility(facility)}
               activeOpacity={0.7}
             >
-              <View
-                style={[
-                  styles.checkboxBox,
-                  form.facilities.includes(facility) && styles.checkboxBoxSelected,
-                ]}
-              />
+              <View style={styles.checkboxBox}>
+                {form.facilities.includes(facility) && (
+                  <Text style={styles.checkmarkText}>✓</Text>
+                )}
+              </View>
               <Text style={styles.facilityText}>{facility}</Text>
             </TouchableOpacity>
           ))}
@@ -280,9 +279,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#f2f2f2',
     marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  checkboxBoxSelected: {
-    backgroundColor: '#aaa',
+  checkmarkText: {
+    fontSize: 14,
+    color: '#28a745', // green checkmark
   },
   facilityText: {
     fontSize: 14,
