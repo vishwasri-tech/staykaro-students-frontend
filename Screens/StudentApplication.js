@@ -80,8 +80,8 @@ export default function StudentApplications() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "android" ? "padding" : "height"}
-      keyboardVerticalOffset={-45} // Adjust based on header/navbar
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={-45}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
@@ -104,16 +104,25 @@ export default function StudentApplications() {
                 <Text style={[styles.headerCell, styles.colDate]}>
                   Applied Date
                 </Text>
-                <Text style={[styles.headerCell, styles.colStatus]}>Status</Text>
-                <Text style={[styles.headerCell, styles.colAction]}>Action</Text>
+                <Text style={[styles.headerCell, styles.colStatus, { textAlign: "center" }]}>
+  Status
+</Text>
+<Text style={[styles.headerCell, styles.colAction, { textAlign: "center" }]}>
+  Action
+</Text>
+
               </View>
 
               {/* Data Rows */}
               {applications.map((app) => (
                 <View key={app.id} style={styles.row}>
                   <Text style={[styles.cell, styles.colName]}>{app.name}</Text>
-                  <Text style={[styles.cell, styles.colCourse]}>{app.course}</Text>
-                  <Text style={[styles.cell, styles.colPhone]}>{app.phone}</Text>
+                  <Text style={[styles.cell, styles.colCourse]}>
+                    {app.course}
+                  </Text>
+                  <Text style={[styles.cell, styles.colPhone]}>
+                    {app.phone}
+                  </Text>
                   <Text style={[styles.cell, styles.colDate]}>{app.date}</Text>
 
                   <View
@@ -192,11 +201,12 @@ export default function StudentApplications() {
   );
 }
 
+// Column widths
 const columnWidth = {
-  colName: 80,
-  colCourse: 59,
-  colPhone: 110,
-  colDate: 120,
+  colName: 70,
+  colCourse: 70,
+  colPhone: 85,
+  colDate: 90,
   colStatus: 100,
   colAction: 160,
 };
@@ -225,52 +235,67 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#eee",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
   },
   headerRow: {
     backgroundColor: "#f9f9f9",
   },
   headerCell: {
     fontWeight: "bold",
-    fontSize: 12,
-    textAlign: "center",
+    fontSize: 13,
+    textAlign: "row",
+    color: "#333",
   },
   cell: {
-    fontSize: 12,
-    textAlign: "center",
+    fontSize: 13,
+    textAlign: "left",
+    color: "#333",
   },
   colName: { width: columnWidth.colName },
   colCourse: { width: columnWidth.colCourse },
   colPhone: { width: columnWidth.colPhone },
   colDate: { width: columnWidth.colDate },
-  colStatus: { width: columnWidth.colStatus },
-  colAction: { width: columnWidth.colAction },
+  colStatus: {
+  width: columnWidth.colStatus,
+  alignItems: "center",
+  justifyContent: "center",
+},
+colAction: {
+  width: columnWidth.colAction,
+  alignItems: "center",
+  justifyContent: "center",
+},
+
   statusBox: {
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 20,
+    borderRadius: 14,
+    marginRight: 10,
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center",
+    alignSelf: "flex-start",
   },
   statusText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "600",
   },
   actionContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    flexWrap: "wrap",
   },
   actionButton: {
     borderRadius: 6,
     marginHorizontal: 4,
+    marginVertical: 2,
     borderWidth: 1,
     borderColor: "#000",
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
   buttonText: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#000",
   },
   form: {

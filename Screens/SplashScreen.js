@@ -28,7 +28,7 @@ const SplashScreen = () => {
           if (roleSelected === 'student') {
             navigation.replace('BannerPage');
           } else if (roleSelected === 'owner') {
-            navigation.replace('RegisterHostel');
+            navigation.replace('Admin');
           }
         });
       }, 1000); // 1-second delay
