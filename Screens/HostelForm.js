@@ -60,6 +60,7 @@ export default function HostelForm() {
       style={{ flex: 1, backgroundColor: '#fff' }}
       behavior={Platform.OS === 'android' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'android' ? 10 : 0}
+      
     >
       <ScrollView
         contentContainerStyle={styles.container}

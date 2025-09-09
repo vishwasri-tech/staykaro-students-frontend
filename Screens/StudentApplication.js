@@ -7,6 +7,10 @@ import {
   TextInput,
   Dimensions,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { Button } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
@@ -14,20 +18,15 @@ import { Picker } from "@react-native-picker/picker";
 const { width } = Dimensions.get("window");
 
 export default function StudentApplications() {
-  // Get the current year dynamically
   const currentYear = new Date().getFullYear();
-
-  // Number of future and past years to show in picker
   const numberOfFutureYears = 100;
   const numberOfPastYears = 2;
 
-  // Generate years array from currentYear + futureYears down to currentYear - pastYears
   const years = Array.from(
     { length: numberOfFutureYears + numberOfPastYears + 1 },
     (_, i) => (currentYear + numberOfFutureYears - i).toString()
   );
 
-  // State to hold the selected year, default is currentYear
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
 
   const [applications, setApplications] = useState([
@@ -79,99 +78,120 @@ export default function StudentApplications() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text style={styles.title}>Student Applications</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "android" ? "padding" : "height"}
+      keyboardVerticalOffset={-45} // Adjust based on header/navbar
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>Student Applications</Text>
 
-      {/* Table */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.table}>
-          {/* Header Row */}
-          <View style={[styles.row, styles.headerRow]}>
-            <Text style={[styles.headerCell, styles.colName]}>Name</Text>
-            <Text style={[styles.headerCell, styles.colCourse]}>Course/ Dept</Text>
-            <Text style={[styles.headerCell, styles.colPhone]}>Phone</Text>
-            <Text style={[styles.headerCell, styles.colDate]}>Applied Date</Text>
-            <Text style={[styles.headerCell, styles.colStatus]}>Status</Text>
-            <Text style={[styles.headerCell, styles.colAction]}>Action</Text>
-          </View>
-
-          {/* Data Rows */}
-          {applications.map((app) => (
-            <View key={app.id} style={styles.row}>
-              <Text style={[styles.cell, styles.colName]}>{app.name}</Text>
-              <Text style={[styles.cell, styles.colCourse]}>{app.course}</Text>
-              <Text style={[styles.cell, styles.colPhone]}>{app.phone}</Text>
-              <Text style={[styles.cell, styles.colDate]}>{app.date}</Text>
-
-              <View style={[styles.statusBox, getStatusStyle(app.status), styles.colStatus]}>
-                <Text style={styles.statusText}>{app.status}</Text>
+          {/* Table */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.table}>
+              {/* Header Row */}
+              <View style={[styles.row, styles.headerRow]}>
+                <Text style={[styles.headerCell, styles.colName]}>Name</Text>
+                <Text style={[styles.headerCell, styles.colCourse]}>
+                  Course/ Dept
+                </Text>
+                <Text style={[styles.headerCell, styles.colPhone]}>Phone</Text>
+                <Text style={[styles.headerCell, styles.colDate]}>
+                  Applied Date
+                </Text>
+                <Text style={[styles.headerCell, styles.colStatus]}>Status</Text>
+                <Text style={[styles.headerCell, styles.colAction]}>Action</Text>
               </View>
 
-              <View style={[styles.actionContainer, styles.colAction]}>
-                {app.status !== "Approved" && (
-                  <Button
-                    mode="outlined"
-                    compact
-                    style={styles.actionButton}
-                    labelStyle={styles.buttonText}
-                    onPress={() => handleStatusChange(app.id, "Approved")}
+              {/* Data Rows */}
+              {applications.map((app) => (
+                <View key={app.id} style={styles.row}>
+                  <Text style={[styles.cell, styles.colName]}>{app.name}</Text>
+                  <Text style={[styles.cell, styles.colCourse]}>{app.course}</Text>
+                  <Text style={[styles.cell, styles.colPhone]}>{app.phone}</Text>
+                  <Text style={[styles.cell, styles.colDate]}>{app.date}</Text>
+
+                  <View
+                    style={[
+                      styles.statusBox,
+                      getStatusStyle(app.status),
+                      styles.colStatus,
+                    ]}
                   >
-                    Approve
-                  </Button>
-                )}
-                {app.status !== "Rejected" && (
-                  <Button
-                    mode="outlined"
-                    compact
-                    style={styles.actionButton}
-                    labelStyle={styles.buttonText}
-                    onPress={() => handleStatusChange(app.id, "Rejected")}
-                  >
-                    Reject
-                  </Button>
-                )}
-              </View>
+                    <Text style={styles.statusText}>{app.status}</Text>
+                  </View>
+
+                  <View style={[styles.actionContainer, styles.colAction]}>
+                    {app.status !== "Approved" && (
+                      <Button
+                        mode="outlined"
+                        compact
+                        style={styles.actionButton}
+                        labelStyle={styles.buttonText}
+                        onPress={() => handleStatusChange(app.id, "Approved")}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                    {app.status !== "Rejected" && (
+                      <Button
+                        mode="outlined"
+                        compact
+                        style={styles.actionButton}
+                        labelStyle={styles.buttonText}
+                        onPress={() => handleStatusChange(app.id, "Rejected")}
+                      >
+                        Reject
+                      </Button>
+                    )}
+                  </View>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-      </ScrollView>
+          </ScrollView>
 
-      {/* Student Form */}
-      <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Student Details :</Text>
+          {/* Student Form */}
+          <View style={styles.form}>
+            <Text style={styles.sectionTitle}>Student Details :</Text>
 
-        <Text style={styles.label}>Name :</Text>
-        <TextInput style={styles.input} placeholder="Enter Name" />
+            <Text style={styles.label}>Name :</Text>
+            <TextInput style={styles.input} placeholder="Enter Name" />
 
-        <Text style={styles.label}>College Info :</Text>
-        <TextInput style={styles.input} placeholder="Enter College Info" />
+            <Text style={styles.label}>College Info :</Text>
+            <TextInput style={styles.input} placeholder="Enter College Info" />
 
-        <Text style={styles.label}>Year :</Text>
-        <View style={styles.pickerBox}>
-          <Picker
-            selectedValue={selectedYear}
-            onValueChange={(itemValue) => setSelectedYear(itemValue)}
-            style={styles.picker}
-            dropdownIconColor="#333"
-          >
-            {years.map((year) => (
-              <Picker.Item key={year} label={year} value={year} />
-            ))}
-          </Picker>
-        </View>
+            <Text style={styles.label}>Year :</Text>
+            <View style={styles.pickerBox}>
+              <Picker
+                selectedValue={selectedYear}
+                onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                style={styles.picker}
+                dropdownIconColor="#333"
+              >
+                {years.map((year) => (
+                  <Picker.Item key={year} label={year} value={year} />
+                ))}
+              </Picker>
+            </View>
 
-        <Text style={styles.label}>ID Proof :</Text>
-        <Image
-          source={require("../assets/id-proof.png")}
-          style={styles.idProofImage}
-          resizeMode="contain"
-        />
-      </View>
-    </ScrollView>
+            <Text style={styles.label}>ID Proof :</Text>
+            <Image
+              source={require("../assets/id-proof.png")}
+              style={styles.idProofImage}
+              resizeMode="contain"
+            />
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
-// Column widths based on screenshot spacing
 const columnWidth = {
   colName: 80,
   colCourse: 59,
