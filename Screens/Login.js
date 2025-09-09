@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   View,
@@ -27,8 +26,9 @@ const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [secure, setSecure] = useState(true);
 
-   // Handle Login
+  // Handle Login
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Email and password are required");
@@ -63,7 +63,6 @@ const Login = ({ navigation }) => {
       );
     }
   };
-  const [secure, setSecure] = useState(true);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -116,22 +115,13 @@ const Login = ({ navigation }) => {
             {/* Password with Eye Button */}
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Password</Text>
-
-              <TextInput
-                placeholder="Enter password..."
-                secureTextEntry
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-              />
-
               <View style={styles.passwordContainer}>
                 <TextInput
                   placeholder="Enter password..."
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={secure}
-                  style={[styles.input, { flex: 1, borderWidth: 0 }]}
+                  style={styles.passwordInput}
                 />
                 <TouchableOpacity onPress={() => setSecure(!secure)}>
                   <Ionicons
@@ -145,7 +135,7 @@ const Login = ({ navigation }) => {
               {/* Forgot Password Link */}
               <TouchableOpacity
                 style={styles.forgotPassword}
-                onPress={() => navigation.navigate('ForgotPassword')}
+                onPress={() => navigation.navigate("ForgotPassword")}
               >
                 <Text style={styles.forgotText}>Forgot Password?</Text>
               </TouchableOpacity>
@@ -165,10 +155,10 @@ const Login = ({ navigation }) => {
 
             {/* Register Prompt */}
             <Text style={styles.registerPrompt}>
-              Don’t have an account?{' '}
+              Don’t have an account?{" "}
               <Text
                 style={styles.registerLink}
-                onPress={() => navigation.navigate('SignUp')}
+                onPress={() => navigation.navigate("SignUp")}
               >
                 Register here
               </Text>
@@ -246,6 +236,11 @@ const styles = StyleSheet.create({
     borderColor: "#AEAEAE",
     borderRadius: wp('2%'),
     paddingHorizontal: wp('3%'),
+    height: hp('6%'), // ✅ same as input
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: hp('1.7%'),
   },
   forgotPassword: {
     alignSelf: 'flex-end',
