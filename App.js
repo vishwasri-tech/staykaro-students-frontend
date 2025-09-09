@@ -4,12 +4,6 @@ import React from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import HostelDetails from "./Screens/HostelDetails";
-
-
-
-
 import BottomNavbar from './Screens/BottomNavbar';
 import Admin from './Screens/Admin';
 import AdminNavbar from './Screens/AdminNavbar';
@@ -23,12 +17,6 @@ import ForgotPassword from "./Screens/ForgotPassword";
 import RegisterHostel from "./Screens/RegisterHostel";
 import HomePage from "./Screens/HomePage";
 import HostelDetails from "./Screens/HostelDetails";
-
-
-
-import BottomNavbar from './Screens/BottomNavbar';
-import Admin from './Screens/Admin';
-import AdminNavbar from './Screens/AdminNavbar';
 
 const Stack = createNativeStackNavigator();
 

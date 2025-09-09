@@ -1,5 +1,4 @@
-
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,25 +11,25 @@ import {
   Platform,
   ScrollView,
   KeyboardAvoidingView,
-} from 'react-native';
+  Alert,
+} from "react-native";
 import axios from "axios";
-import { Alert } from "react-native";
-
-
-import Constants from 'expo-constants';
+import { Ionicons } from "@expo/vector-icons";
+import Constants from "expo-constants";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+} from "react-native-responsive-screen";
 
 const SignUp = ({ navigation }) => {
-  // State for inputs
+  // State
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [secure, setSecure] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // Validation function
+  // Validation
   const validateForm = () => {
     if (!name.trim() || !email.trim() || !password.trim()) {
       Alert.alert("Error", "All fields are required");
@@ -48,13 +47,13 @@ const SignUp = ({ navigation }) => {
     return true;
   };
 
-  // Handle SignUp
+  // Handle Sign Up
   const handleSignUp = async () => {
     if (!validateForm()) return;
 
     try {
       setLoading(true);
-      const res = await axios.post("http://192.168.1.15:5000/api/auth/signup", {
+      await axios.post("http://192.168.1.15:5000/api/auth/signup", {
         name,
         email,
         password,
@@ -76,20 +75,14 @@ const SignUp = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {Platform.OS === 'android' && (
-        <View style={styles.statusBarBackground} />
-      )}
+      {Platform.OS === "android" && <View style={styles.statusBarBackground} />}
 
-      <StatusBar
-             translucent
-             backgroundColor="#fff"
-             barStyle="dark-content"
-           />
+      <StatusBar translucent backgroundColor="#fff" barStyle="dark-content" />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.flexGrow}
-        keyboardVerticalOffset={Platform.OS === 'android' ? 0 : 40}
+        keyboardVerticalOffset={Platform.OS === "android" ? 0 : 40}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
@@ -99,7 +92,7 @@ const SignUp = ({ navigation }) => {
           <View style={styles.container}>
             {/* Logo */}
             <Image
-              source={require('../assets/staykaro-logo.png')}
+              source={require("../assets/staykaro-logo.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -114,9 +107,12 @@ const SignUp = ({ navigation }) => {
             {/* Input Fields */}
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Name</Text>
-              <TextInput placeholder="Enter your name..." style={styles.input}
-               value={name}
-                onChangeText={setName} />
+              <TextInput
+                placeholder="Enter your name..."
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+              />
 
               <Text style={styles.inputLabel}>Email</Text>
               <TextInput
@@ -128,13 +124,22 @@ const SignUp = ({ navigation }) => {
               />
 
               <Text style={styles.inputLabel}>Password</Text>
-              <TextInput
-                placeholder="Enter your password..."
-                secureTextEntry
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  placeholder="Enter your password..."
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={secure}
+                  style={styles.passwordInput}
+                />
+                <TouchableOpacity onPress={() => setSecure(!secure)}>
+                  <Ionicons
+                    name={secure ? "eye-off" : "eye"}
+                    size={22}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Sign Up Button */}
@@ -143,14 +148,16 @@ const SignUp = ({ navigation }) => {
               onPress={handleSignUp}
               disabled={loading}
             >
-              <Text style={styles.signupText}>Sign Up</Text>
+              <Text style={styles.signupText}>
+                {loading ? "Signing Up..." : "Sign Up"}
+              </Text>
             </TouchableOpacity>
 
-            {/* Google Signup Button */}
+            {/* Google Signup */}
             <TouchableOpacity style={styles.googleLink}>
               <View style={styles.googleInline}>
                 <Image
-                  source={require('../assets/Google.png')}
+                  source={require("../assets/Google.png")}
                   style={styles.googleIcon}
                 />
                 <Text style={styles.googleText}>Sign Up with Google</Text>
@@ -159,10 +166,10 @@ const SignUp = ({ navigation }) => {
 
             {/* Login Prompt */}
             <Text style={styles.loginPrompt}>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Text
                 style={styles.loginLink}
-                onPress={() => navigation.navigate('Login')}
+                onPress={() => navigation.navigate("Login")}
               >
                 Login here
               </Text>
@@ -177,105 +184,117 @@ const SignUp = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: '#FF0202',
   },
   statusBarBackground: {
-    height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    // backgroundColor: '#FF0202',
+    height: Platform.OS === "android" ? Constants.statusBarHeight : 0,
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   container: {
-    padding: wp('6%'),
-    justifyContent: 'center',
-    borderTopLeftRadius: wp('5%'),
-    borderTopRightRadius: wp('5%'),
-    paddingBottom: hp('4%'),
+    padding: wp("6%"),
+    justifyContent: "center",
+    borderTopLeftRadius: wp("5%"),
+    borderTopRightRadius: wp("5%"),
+    paddingBottom: hp("4%"),
   },
   flexGrow: {
     flex: 1,
   },
   logo: {
-    width: wp('35%'),
-    height: hp('7.25%'),
-    alignSelf: 'center',
-    marginTop: hp('-4.25%'),
+    width: wp("35%"),
+    height: hp("7.25%"),
+    alignSelf: "center",
+    marginTop: hp("-4.25%"),
   },
   title: {
-    fontSize: hp('3%'),
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: hp('5.75%'),
+    fontSize: hp("3%"),
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: hp("5.75%"),
   },
   subtitle: {
-    fontSize: hp('1.6%'),
-    textAlign: 'center',
-    marginVertical: hp('1.5%'),
-    marginTop: hp('1.3%'),
-    marginBottom: hp('5%'),
-    lineHeight: hp('2.4%'),
-    color: '#555',
+    fontSize: hp("1.6%"),
+    textAlign: "center",
+    marginVertical: hp("1.5%"),
+    marginTop: hp("1.3%"),
+    marginBottom: hp("5%"),
+    lineHeight: hp("2.4%"),
+    color: "#555",
   },
   inputWrapper: {
-    marginBottom: hp('0.25%'),
+    marginBottom: hp("0.25%"),
   },
   inputLabel: {
-    fontSize: hp('1.8%'),
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: hp('0.25%'),
+    fontSize: hp("1.8%"),
+    fontWeight: "500",
+    color: "#333",
+    marginBottom: hp("0.25%"),
   },
   input: {
-    height: hp('5.8%'),
+    height: hp("5.8%"),
     borderWidth: 1,
-    borderColor: '#AEAEAE',
-    borderRadius: wp('2%'),
-    paddingHorizontal: wp('3%'),
-    marginVertical: hp('0.5%'),
+    borderColor: "#AEAEAE",
+    borderRadius: wp("2%"),
+    paddingHorizontal: wp("3%"),
+    marginVertical: hp("0.5%"),
+    fontSize: hp("1.7%"),
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#AEAEAE",
+    borderRadius: wp("2%"),
+    paddingHorizontal: wp("3%"),
+    marginVertical: hp("0.5%"),
+    height: hp("5.8%"), // ✅ same height as email input
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: hp("1.7%"),
   },
   signupButton: {
-    backgroundColor: '#f44336',
-    paddingVertical: hp('1.5%'),
-    borderRadius: wp('2%'),
-    alignItems: 'center',
-    marginBottom: hp('2%'),
-    marginTop: hp('6.25%'),
+    backgroundColor: "#f44336",
+    paddingVertical: hp("1.5%"),
+    borderRadius: wp("2%"),
+    alignItems: "center",
+    marginBottom: hp("2%"),
+    marginTop: hp("6.25%"),
   },
   signupText: {
-    color: '#fff',
-    fontSize: hp('2%'),
-    fontWeight: 'bold',
+    color: "#fff",
+    fontSize: hp("2%"),
+    fontWeight: "bold",
   },
   googleLink: {
-    alignSelf: 'center',
-    marginTop: hp('1.5%'),
+    alignSelf: "center",
+    marginTop: hp("1.5%"),
   },
   googleInline: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   googleIcon: {
-    width: wp('5%'),
-    height: wp('5%'),
-    marginRight: wp('2%'),
+    width: wp("5%"),
+    height: wp("5%"),
+    marginRight: wp("2%"),
   },
   googleText: {
-    fontSize: hp('1.85%'),
-    fontWeight: '500',
-    color: '#000',
+    fontSize: hp("1.85%"),
+    fontWeight: "500",
+    color: "#000",
   },
   loginPrompt: {
-    textAlign: 'center',
-    marginTop: hp('3%'),
-    color: '#333',
+    textAlign: "center",
+    marginTop: hp("3%"),
+    color: "#333",
   },
   loginLink: {
-    color: '#007bff',
-    fontWeight: 'bold',
+    color: "#007bff",
+    fontWeight: "bold",
   },
 });
 
 export default SignUp;
-

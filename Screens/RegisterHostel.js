@@ -15,14 +15,16 @@ import {
 } from 'react-native';
 import Constants from 'expo-constants';
 import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-const API_BASE = "http://192.168.1.3:5000"; 
+
+const API_BASE = "http://192.168.1.3:5000";
 
 const RegisterHostel = ({ navigation }) => {
-const [form, setForm] = useState({
+  const [form, setForm] = useState({
     ownerName: '',
     emailOrMobile: '',
     password: '',
@@ -32,24 +34,26 @@ const [form, setForm] = useState({
     contactNumber: '',
   });
 
+  const [secure, setSecure] = useState(true);
+  const [secureConfirm, setSecureConfirm] = useState(true);
+
   const handleChange = (key, value) => {
     setForm({ ...form, [key]: value });
   };
- const validateForm = () => {
+
+  const validateForm = () => {
     if (!form.ownerName || !form.emailOrMobile || !form.password || !form.confirmPassword || !form.hostelName) {
       Alert.alert('Error', 'Please fill all required fields.');
       return false;
     }
-    // basic email check
-   const emailRegex = /\S+@\S+\.\S+/;
-  // ✅ Phone regex (10 digits, only numbers, adjust as per your requirement)
-  const phoneRegex = /^[0-9]{10}$/;
 
-  // Check if input is either email OR phone
-  if (!emailRegex.test(form.emailOrMobile) && !phoneRegex.test(form.emailOrMobile)) {
-    Alert.alert('Error', 'Please enter a valid email address or phone number.');
-    return false;
-  }
+    const emailRegex = /\S+@\S+\.\S+/;
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (!emailRegex.test(form.emailOrMobile) && !phoneRegex.test(form.emailOrMobile)) {
+      Alert.alert('Error', 'Please enter a valid email address or phone number.');
+      return false;
+    }
     if (form.password.length < 6) {
       Alert.alert('Error', 'Password must be at least 6 characters.');
       return false;
@@ -60,35 +64,37 @@ const [form, setForm] = useState({
     }
     return true;
   };
+
   const handleRegister = async () => {
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  try {
-    const res = await axios.post(`${API_BASE}/api/hosts/register`, form);
+    try {
+      const res = await axios.post(`${API_BASE}/api/hosts/register`, form);
 
-   
-    Alert.alert('Success', res.data.message || "Registered successfully", [
-      {
-        text: "OK",
-        onPress: () => navigation.navigate('Admin'),  
-      },
-    ]);
-  } catch (err) {
-    console.error("Registration error:", err);
-    const msg = err.response?.data?.message || 'Something went wrong';
-    Alert.alert('Error', msg);
-  }
-};
+      Alert.alert('Success', res.data.message || "Registered successfully", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate('Admin'),
+        },
+      ]);
+    } catch (err) {
+      console.error("Registration error:", err);
+      const msg = err.response?.data?.message || 'Something went wrong';
+      Alert.alert('Error', msg);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {Platform.OS === 'android' && (
         <View style={styles.statusBarBackground} />
       )}
       <StatusBar
-             translucent
-             backgroundColor="#fff"
-             barStyle="dark-content"
-           />
+        translucent
+        backgroundColor="#fff"
+        barStyle="dark-content"
+      />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flexGrow}
@@ -117,34 +123,93 @@ const [form, setForm] = useState({
             {/* Input Fields */}
             <View style={styles.inputWrapper}>
               <Text style={styles.label}>Owner Name</Text>
-              <TextInput style={styles.input} placeholder="Enter your name...." value={form.ownerName} onChangeText={(t) => handleChange('ownerName', t)}/>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your name...."
+                value={form.ownerName}
+                onChangeText={(t) => handleChange('ownerName', t)}
+              />
 
               <Text style={styles.label}>Owner Email / Mobile No.</Text>
-              <TextInput style={styles.input} placeholder="Enter email...." keyboardType="email-address" value={form.emailOrMobile} onChangeText={(t) => handleChange('emailOrMobile', t)}/>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter email...."
+                keyboardType="email-address"
+                value={form.emailOrMobile}
+                onChangeText={(t) => handleChange('emailOrMobile', t)}
+              />
 
+              {/* Password with Eye */}
               <Text style={styles.label}>Password</Text>
-              <TextInput style={styles.input} placeholder="Create Password...." secureTextEntry value={form.password} onChangeText={(t) => handleChange('password', t)} />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0 }]}
+                  placeholder="Create Password...."
+                  secureTextEntry={secure}
+                  value={form.password}
+                  onChangeText={(t) => handleChange('password', t)}
+                />
+                <TouchableOpacity onPress={() => setSecure(!secure)}>
+                  <Ionicons
+                    name={secure ? 'eye-off' : 'eye'}
+                    size={22}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+              </View>
 
+              {/* Confirm Password with Eye */}
               <Text style={styles.label}>Confirm Password</Text>
-              <TextInput style={styles.input} placeholder="Confirm Password...." secureTextEntry value={form.confirmPassword} onChangeText={(t) => handleChange('confirmPassword', t)}/>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0 }]}
+                  placeholder="Confirm Password...."
+                  secureTextEntry={secureConfirm}
+                  value={form.confirmPassword}
+                  onChangeText={(t) => handleChange('confirmPassword', t)}
+                />
+                <TouchableOpacity onPress={() => setSecureConfirm(!secureConfirm)}>
+                  <Ionicons
+                    name={secureConfirm ? 'eye-off' : 'eye'}
+                    size={22}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+              </View>
 
               <Text style={styles.label}>Hostel Name</Text>
-              <TextInput style={styles.input} placeholder="Enter Hostel Name..." value={form.hostelName} onChangeText={(t) => handleChange('hostelName', t)}/>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Hostel Name..."
+                value={form.hostelName}
+                onChangeText={(t) => handleChange('hostelName', t)}
+              />
 
               <View style={styles.row}>
                 <View style={[styles.inputGroup, { flex: 1.3 }]}>
                   <Text style={styles.label}>Address</Text>
-                  <TextInput style={styles.input} placeholder="Type your Address..." value={form.address} onChangeText={(t) => handleChange('address', t)}/>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Type your Address..."
+                    value={form.address}
+                    onChangeText={(t) => handleChange('address', t)}
+                  />
                 </View>
                 <View style={{ width: wp('3%') }} />
                 <View style={[styles.inputGroup, { flex: 0.9 }]}>
                   <Text style={styles.label}>Contact Number</Text>
-                  <TextInput style={styles.input} placeholder="+91" keyboardType="phone-pad" value={form.contactNumber} onChangeText={(t) => handleChange('contactNumber', t)}/>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="+91"
+                    keyboardType="phone-pad"
+                    value={form.contactNumber}
+                    onChangeText={(t) => handleChange('contactNumber', t)}
+                  />
                 </View>
               </View>
             </View>
 
-           <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
               <Text style={styles.registerText}>Register Hostel</Text>
             </TouchableOpacity>
 
@@ -180,11 +245,9 @@ const [form, setForm] = useState({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: '#FF0202',
   },
   statusBarBackground: {
     height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    // backgroundColor: '#FF0202',
   },
   flexGrow: {
     flex: 1,
@@ -235,6 +298,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('3%'),
     marginBottom: hp('1.5%'),
     fontSize: hp('1.7%'),
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: wp('2%'),
+    paddingHorizontal: wp('3%'),
+    marginBottom: hp('1.5%'),
   },
   row: {
     flexDirection: 'row',

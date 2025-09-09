@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { Ionicons } from "@expo/vector-icons";
 import Constants from 'expo-constants';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -62,6 +63,7 @@ const Login = ({ navigation }) => {
       );
     }
   };
+  const [secure, setSecure] = useState(true);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -69,11 +71,11 @@ const Login = ({ navigation }) => {
         <View style={styles.statusBarBackground} />
       )}
 
-     <StatusBar
-            translucent
-            backgroundColor="#fff"
-            barStyle="dark-content"
-          />
+      <StatusBar
+        translucent
+        backgroundColor="#fff"
+        barStyle="dark-content"
+      />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -111,9 +113,10 @@ const Login = ({ navigation }) => {
               />
             </View>
 
-            {/* Password */}
+            {/* Password with Eye Button */}
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Password</Text>
+
               <TextInput
                 placeholder="Enter password..."
                 secureTextEntry
@@ -121,6 +124,25 @@ const Login = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
               />
+
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  placeholder="Enter password..."
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={secure}
+                  style={[styles.input, { flex: 1, borderWidth: 0 }]}
+                />
+                <TouchableOpacity onPress={() => setSecure(!secure)}>
+                  <Ionicons
+                    name={secure ? "eye-off" : "eye"}
+                    size={22}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Forgot Password Link */}
               <TouchableOpacity
                 style={styles.forgotPassword}
                 onPress={() => navigation.navigate('ForgotPassword')}
@@ -138,7 +160,7 @@ const Login = ({ navigation }) => {
               <Text style={styles.loginText}>Log In</Text>
             </TouchableOpacity>
 
-            {/* Google Login - Placeholder for now */}
+            {/* Google Login Placeholder */}
             <TouchableOpacity style={styles.googleLink}></TouchableOpacity>
 
             {/* Register Prompt */}
@@ -161,11 +183,9 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: '#FF0202',
   },
   statusBarBackground: {
     height: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
-    // backgroundColor: '#FF0202',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -219,6 +239,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('3%'),
     fontSize: hp('1.7%'),
   },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#AEAEAE",
+    borderRadius: wp('2%'),
+    paddingHorizontal: wp('3%'),
+  },
   forgotPassword: {
     alignSelf: 'flex-end',
     marginTop: hp('0.7%'),
@@ -255,4 +283,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-
