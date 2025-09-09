@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, {useState} from "react";
 import {
   View,
   Text,
@@ -13,6 +13,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
+import axios from "axios";
+import { Alert } from "react-native";
+
 
 import Constants from 'expo-constants';
 import {
@@ -21,6 +24,56 @@ import {
 } from 'react-native-responsive-screen';
 
 const SignUp = ({ navigation }) => {
+  // State for inputs
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Validation function
+  const validateForm = () => {
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      Alert.alert("Error", "All fields are required");
+      return false;
+    }
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Error", "Please enter a valid email");
+      return false;
+    }
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters");
+      return false;
+    }
+    return true;
+  };
+
+  // Handle SignUp
+  const handleSignUp = async () => {
+    if (!validateForm()) return;
+
+    try {
+      setLoading(true);
+      const res = await axios.post("http://192.168.1.15:5000/api/auth/signup", {
+        name,
+        email,
+        password,
+      });
+
+      setLoading(false);
+      Alert.alert("Success", "Account created successfully", [
+        { text: "OK", onPress: () => navigation.navigate("Login") },
+      ]);
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+      Alert.alert(
+        "Signup Failed",
+        err.response?.data?.message || "Something went wrong"
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {Platform.OS === 'android' && (
@@ -61,13 +114,17 @@ const SignUp = ({ navigation }) => {
             {/* Input Fields */}
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Name</Text>
-              <TextInput placeholder="Enter your name..." style={styles.input} />
+              <TextInput placeholder="Enter your name..." style={styles.input}
+               value={name}
+                onChangeText={setName} />
 
               <Text style={styles.inputLabel}>Email</Text>
               <TextInput
                 placeholder="Enter your email..."
                 keyboardType="email-address"
                 style={styles.input}
+                value={email}
+                onChangeText={setEmail}
               />
 
               <Text style={styles.inputLabel}>Password</Text>
@@ -75,13 +132,16 @@ const SignUp = ({ navigation }) => {
                 placeholder="Enter your password..."
                 secureTextEntry
                 style={styles.input}
+                value={password}
+                onChangeText={setPassword}
               />
             </View>
 
             {/* Sign Up Button */}
             <TouchableOpacity
               style={styles.signupButton}
-              onPress={() => navigation.navigate('Login')}
+              onPress={handleSignUp}
+              disabled={loading}
             >
               <Text style={styles.signupText}>Sign Up</Text>
             </TouchableOpacity>

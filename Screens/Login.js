@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,57 @@ import {
   Platform,
   ScrollView,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Constants from 'expo-constants';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const Login = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+   // Handle Login
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Email and password are required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // ⚡ Replace with your backend API
+      const res = await axios.post("http://192.168.1.15:5000/api/auth/login", {
+        email,
+        password,
+      });
+
+      setLoading(false);
+
+      // Save token in AsyncStorage
+      await AsyncStorage.setItem("token", res.data.token);
+
+      Alert.alert("Success", "Login successful", [
+        { text: "OK", onPress: () => navigation.navigate("HomePage") },
+      ]);
+
+      console.log("Login Response:", res.data);
+    } catch (err) {
+      setLoading(false);
+      console.error("Login error:", err.response?.data || err.message);
+      Alert.alert(
+        "Login Failed",
+        err.response?.data?.message || "Invalid credentials"
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {Platform.OS === 'android' && (
@@ -63,6 +106,8 @@ const Login = ({ navigation }) => {
                 placeholder="Enter email..."
                 keyboardType="email-address"
                 style={styles.input}
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
 
@@ -73,6 +118,8 @@ const Login = ({ navigation }) => {
                 placeholder="Enter password..."
                 secureTextEntry
                 style={styles.input}
+                value={password}
+                onChangeText={setPassword}
               />
               <TouchableOpacity
                 style={styles.forgotPassword}
@@ -85,7 +132,8 @@ const Login = ({ navigation }) => {
             {/* Login Button */}
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={() => navigation.navigate('HomePage')}
+              onPress={handleLogin}
+              disabled={loading}
             >
               <Text style={styles.loginText}>Log In</Text>
             </TouchableOpacity>
