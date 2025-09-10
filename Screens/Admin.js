@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,57 +9,67 @@ import {
 } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import AdminNavbar from './AdminNavbar';
+import axios from 'axios';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
 // Dashboard tiles data
+
+// Dashboard tiles data
 const dashboardData = [
-  {
-    title: 'Total Students',
-    image: require('../assets/dashboard1.png'),
-  },
-  {
-    title: 'Rooms Available/Total Rooms',
-    image: require('../assets/dashboard2.png'),
-  },
-  {
-    title: 'Applications Pending',
-    image: require('../assets/dashboard3.png'),
-  },
-  {
-    title: 'Total Fees Collected',
-    image: require('../assets/dashboard4.png'),
-  },
+  { title: 'Total Students', image: require('../assets/dashboard1.png') },
+  { title: 'Rooms Available/Total Rooms', image: require('../assets/dashboard2.png') },
+  { title: 'Applications Pending', image: require('../assets/dashboard3.png') },
+  { title: 'Total Fees Collected', image: require('../assets/dashboard4.png') },
 ];
 
 export default function Admin() {
+  const [host, setHost] = useState(null);
+
+  useEffect(() => {
+    const fetchRecentHost = async () => {
+      try {
+        const res = await axios.get(`http://192.168.1.8:5000/api/admin/recent`);
+        setHost(res.data);
+      } catch (err) {
+        console.log('Error fetching recent host:', err);
+      }
+    };
+
+    fetchRecentHost();
+  }, []);
+
+  if (!host) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <ScrollView
-        style={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Greeting Layout Card */}
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Greeting Card */}
         <View style={styles.greetingCard}>
           <View style={styles.header}>
             <View>
-              <Text style={styles.greeting}>Hi, Chandhu !</Text>
+              <Text style={styles.greeting}>Hi, {host.name}!</Text>
               <View style={styles.locationRow}>
                 <Ionicons name="location-sharp" size={wp('4%')} color="#555" />
-                <Text style={styles.location}>Begumpet, Hyderabad</Text>
+                <Text style={styles.location}>{host.location}</Text>
               </View>
             </View>
             <Ionicons name="notifications" size={wp('6%')} color="#F4D03F" />
           </View>
         </View>
 
-        {/* Hostel Card inside White Layout */}
+        {/* Hostel Card */}
         <View style={styles.hostelCardWrapper}>
           <View style={styles.hostelCard}>
-            <Text style={styles.hostelTitle}>Michael’s Boys Hostel</Text>
-            <Text style={styles.gender}>Male</Text>
+            <Text style={styles.hostelTitle}>{host.hostelName}</Text>
 
             <View style={styles.statusBadge}>
               <Text style={styles.statusText}>Active</Text>
@@ -90,7 +100,6 @@ export default function Admin() {
           ))}
         </View>
 
-        {/* Spacer */}
         <View style={{ height: hp('12%') }} />
       </ScrollView>
 

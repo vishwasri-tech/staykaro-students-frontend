@@ -22,7 +22,11 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+<<<<<<< HEAD
 const API_BASE = "http://192.168.1.19:5000";
+=======
+const API_BASE = "http://192.168.1.8:5000";
+>>>>>>> 7144865 (done with adminscreen)
 
 const RegisterHostel = ({ navigation }) => {
   const route = useRoute();
