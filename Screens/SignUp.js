@@ -21,7 +21,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-const SignUp = ({ navigation }) => {
+const SignUp = ({ route, navigation }) => {
+  const { role } = route.params; // 👈 From SplashScreen
   // State
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,6 +58,7 @@ const SignUp = ({ navigation }) => {
         name,
         email,
         password,
+        role,
       });
 
       setLoading(false);

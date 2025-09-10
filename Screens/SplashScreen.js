@@ -64,14 +64,14 @@ const SplashScreen = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.roleButton}
-            onPress={() => setRoleSelected('owner')}
+            onPress={() => navigation.replace('SignUp', { role: 'owner' })}
           >
             <Text style={styles.buttonText}>Owner</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.roleButton}
-            onPress={() => setRoleSelected('student')}
+            onPress={() => navigation.replace('SignUp', { role: 'student' })}
           >
             <Text style={styles.buttonText}>User</Text>
           </TouchableOpacity>
