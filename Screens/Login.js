@@ -39,21 +39,27 @@ const Login = ({ navigation }) => {
       setLoading(true);
 
       // ⚡ Replace with your backend API
-      const res = await axios.post("http://192.168.1.15:5000/api/auth/login", {
+      const res = await axios.post("http://192.168.1.19:5000/api/auth/login", {
         email,
         password,
       });
 
       setLoading(false);
 
+      const { token, role } = res.data;
+
       // Save token in AsyncStorage
-      await AsyncStorage.setItem("token", res.data.token);
+      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("role", role);
 
-      Alert.alert("Success", "Login successful", [
-        { text: "OK", onPress: () => navigation.navigate("HomePage") },
-      ]);
-
-      console.log("Login Response:", res.data);
+      // Navigate based on role
+      if (role === "owner") {
+        navigation.replace("Admin"); // 🔹 Owners → Admin page
+      } else if (role === "student") {
+        navigation.replace("HomePage"); // 🔹 Students → HomePage
+      } else {
+        Alert.alert("Error", "Unknown role returned from server");
+      }
     } catch (err) {
       setLoading(false);
       console.error("Login error:", err.response?.data || err.message);

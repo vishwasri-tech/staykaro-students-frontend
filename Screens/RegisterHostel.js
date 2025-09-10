@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRoute } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -21,9 +22,12 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-const API_BASE = "http://192.168.1.3:5000";
+const API_BASE = "http://192.168.1.19:5000";
 
 const RegisterHostel = ({ navigation }) => {
+  const route = useRoute();
+  const { role } = route.params || {};
+
   const [form, setForm] = useState({
     ownerName: '',
     emailOrMobile: '',
@@ -32,6 +36,7 @@ const RegisterHostel = ({ navigation }) => {
     hostelName: '',
     address: '',
     contactNumber: '',
+    role: role || 'owner', 
   });
 
   const [secure, setSecure] = useState(true);
@@ -74,7 +79,7 @@ const RegisterHostel = ({ navigation }) => {
       Alert.alert('Success', res.data.message || "Registered successfully", [
         {
           text: "OK",
-          onPress: () => navigation.navigate('Admin'),
+          onPress: () => navigation.navigate('Login'),
         },
       ]);
     } catch (err) {
