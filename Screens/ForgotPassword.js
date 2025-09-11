@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,9 @@ import {
   Platform,
   ScrollView,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
+import axios from "axios";
 
 import Constants from 'expo-constants';
 import {
@@ -20,7 +22,35 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+const API_BASE = "http://192.168.1.19:5000/api/auth";
+
 const ForgotPassword = ({ navigation }) => {
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSave = async () => {
+    if (!name || !password || !confirmPassword) {
+      Alert.alert("Error", "All fields are required");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${API_BASE}/forgot-password`, {
+        name,
+        password,
+        confirmPassword,
+      });
+
+      Alert.alert("Success", res.data.message, [
+        { text: "OK", onPress: () => navigation.navigate("Login") },
+      ]);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Something went wrong";
+      Alert.alert("Error", msg);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {Platform.OS === 'android' && (
@@ -59,13 +89,16 @@ const ForgotPassword = ({ navigation }) => {
             {/* Input Fields */}
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Name</Text>
-              <TextInput placeholder="Enter your name..." style={styles.input} />
+              <TextInput placeholder="Enter your name..." style={styles.input}value={name}
+                onChangeText={setName}/>
 
               <Text style={styles.inputLabel}>Create Password</Text>
               <TextInput
                 placeholder="Enter your password..."
                 secureTextEntry
                 style={styles.input}
+                value={password}
+                onChangeText={setPassword}
               />
 
               <Text style={styles.inputLabel}>Confirm Password</Text>
@@ -73,13 +106,15 @@ const ForgotPassword = ({ navigation }) => {
                 placeholder="Re-enter your password..."
                 secureTextEntry
                 style={styles.input}
+                value={confirmPassword}
+  onChangeText={setConfirmPassword}
               />
             </View>
 
             {/* Save Button */}
             <TouchableOpacity
               style={styles.signupButton}
-              onPress={() => navigation.navigate('Login')}
+              onPress={handleSave}
             >
               <Text style={styles.signupText}>Save</Text>
             </TouchableOpacity>
