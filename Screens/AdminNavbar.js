@@ -23,10 +23,10 @@ const AdminNavbar = () => {
       </TouchableOpacity>
 
       {/* Student Applications */}
-      <TouchableOpacity onPress={() => navigation.navigate('Admin2')}>
+      <TouchableOpacity onPress={() => navigation.navigate('StudentApplications')}>
         <Image
           source={require('../assets/Admin2.png')}
-          style={[styles.icon, isActive('Admin2') && styles.activeIcon]}
+          style={[styles.icon, isActive('StudentApplications') && styles.activeIcon]}
         />
       </TouchableOpacity>
 

@@ -8,7 +8,7 @@ import BottomNavbar from './Screens/BottomNavbar';
 import Admin from './Screens/Admin';
 import AdminNavbar from './Screens/AdminNavbar';
 import AddHostel from './Screens/AddHostel';
-// import StudentApplication from './Screens/StudentApplication';
+import StudentApplications from './Screens/StudentApplications';
 import SplashScreen from "./Screens/SplashScreen";
 import BannerPage from "./Screens/BannerPage";
 import SignUp from "./Screens/SignUp";
@@ -45,7 +45,7 @@ export default function App() {
         <Stack.Screen name="Admin" component={Admin} />
         <Stack.Screen name="AdminNavbar" component={AdminNavbar} />
         <Stack.Screen name='AddHostel' component={AddHostel}/>
-        {/* <Stack.Screen name='StudentApplication' component={StudentApplication}/> */}
+        <Stack.Screen name='StudentApplications' component={StudentApplications}/> 
       </Stack.Navigator>
     </NavigationContainer>
   );
