@@ -10,12 +10,11 @@ import {
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import AdminNavbar from './AdminNavbar';
 import axios from 'axios';
+import * as Location from 'expo-location';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
-// Dashboard tiles data
 
 // Dashboard tiles data
 const dashboardData = [
@@ -33,8 +32,51 @@ export default function Admin() {
       try {
         const res = await axios.get(`http://192.168.1.8:5000/api/admin/recent`);
         setHost(res.data);
+         if (res.data?.id) {
+          getAndUpdateLocation(res.data.id); // update location on backend
+        }
       } catch (err) {
         console.log('Error fetching recent host:', err);
+      }
+    };
+       const getAndUpdateLocation = async (hostId) => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('Permission denied for location');
+          return;
+        }
+
+        let loc = await Location.getCurrentPositionAsync({});
+        let coords = loc.coords;
+
+        let address = await Location.reverseGeocodeAsync({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+
+        let addressText =
+  address.length > 0
+    ? `${address[0].name || address[0].street || "Unknown Area"}, ${address[0].city || ""}, ${address[0].region || ""}`
+    : `Lat: ${coords.latitude.toFixed(3)}, Lng: ${coords.longitude.toFixed(3)}`;
+
+
+        // Update backend with current location
+        await axios.put(`http://192.168.1.8:5000/api/admin/update-location/${hostId}`, {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          address: addressText,
+        });
+
+        setHost((prev) =>
+          prev
+            ? { ...prev, address: addressText, location: { latitude: coords.latitude, longitude: coords.longitude } }
+            : prev
+        );
+
+        console.log('Location updated on backend:', addressText);
+      } catch (err) {
+        console.log('Error fetching/updating location:', err);
       }
     };
 
@@ -59,7 +101,9 @@ export default function Admin() {
               <Text style={styles.greeting}>Hi, {host.name}!</Text>
               <View style={styles.locationRow}>
                 <Ionicons name="location-sharp" size={wp('4%')} color="#555" />
-                <Text style={styles.location}>{host.location}</Text>
+               <Text style={styles.location}>
+                  {host.address ? host.address : `${host.location?.latitude}, ${host.location?.longitude}`}
+                </Text>
               </View>
             </View>
             <Ionicons name="notifications" size={wp('6%')} color="#F4D03F" />

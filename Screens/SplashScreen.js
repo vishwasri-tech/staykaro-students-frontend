@@ -64,11 +64,8 @@ const SplashScreen = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.roleButton}
-<<<<<<< HEAD
-            onPress={() => navigation.replace('RegisterHostel', { role: 'owner' })}
-=======
             onPress={() => navigation.replace('Admin', { role: 'owner' })}
->>>>>>> 7144865 (done with adminscreen)
+
           >
             <Text style={styles.buttonText}>Owner</Text>
           </TouchableOpacity>
