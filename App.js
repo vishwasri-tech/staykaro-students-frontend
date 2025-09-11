@@ -7,8 +7,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BottomNavbar from './Screens/BottomNavbar';
 import Admin from './Screens/Admin';
 import AdminNavbar from './Screens/AdminNavbar';
-import HostelForm from './Screens/HostelForm';
-import StudentApplication from './Screens/StudentApplication';
+import AddHostel from './Screens/AddHostel';
+// import StudentApplication from './Screens/StudentApplication';
 import SplashScreen from "./Screens/SplashScreen";
 import BannerPage from "./Screens/BannerPage";
 import SignUp from "./Screens/SignUp";
@@ -44,8 +44,8 @@ export default function App() {
         <Stack.Screen name="BottomNavbar" component={BottomNavbar} />
         <Stack.Screen name="Admin" component={Admin} />
         <Stack.Screen name="AdminNavbar" component={AdminNavbar} />
-        <Stack.Screen name='HostelForm' component={HostelForm}/>
-        <Stack.Screen name='StudentApplication' component={StudentApplication}/>
+        <Stack.Screen name='AddHostel' component={AddHostel}/>
+        {/* <Stack.Screen name='StudentApplication' component={StudentApplication}/> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -15,6 +15,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
 
 // Dashboard tiles data
 const dashboardData = [
@@ -26,20 +27,22 @@ const dashboardData = [
 
 export default function Admin() {
   const [host, setHost] = useState(null);
+  const navigation = useNavigation(); // ✅ navigation hook
 
   useEffect(() => {
     const fetchRecentHost = async () => {
       try {
         const res = await axios.get(`http://192.168.1.8:5000/api/admin/recent`);
         setHost(res.data);
-         if (res.data?.id) {
-          getAndUpdateLocation(res.data.id); // update location on backend
+        if (res.data?.id) {
+          getAndUpdateLocation(res.data.id);
         }
       } catch (err) {
         console.log('Error fetching recent host:', err);
       }
     };
-       const getAndUpdateLocation = async (hostId) => {
+
+    const getAndUpdateLocation = async (hostId) => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -56,13 +59,11 @@ export default function Admin() {
         });
 
         let addressText =
-  address.length > 0
-    ? `${address[0].name || address[0].street || "Unknown Area"}, ${address[0].city || ""}, ${address[0].region || ""}`
-    : `Lat: ${coords.latitude.toFixed(3)}, Lng: ${coords.longitude.toFixed(3)}`;
+          address.length > 0
+            ? `${address[0].name || address[0].street || 'Unknown Area'}, ${address[0].city || ''}, ${address[0].region || ''}`
+            : `Lat: ${coords.latitude.toFixed(3)}, Lng: ${coords.longitude.toFixed(3)}`;
 
-
-        // Update backend with current location
-        await axios.put(`http://192.168.1.8:5000/api/admin/update-location/${hostId}`, {
+        await axios.put(`http:///api/admin/update-location/${hostId}`, {
           latitude: coords.latitude,
           longitude: coords.longitude,
           address: addressText,
@@ -97,16 +98,35 @@ export default function Admin() {
         {/* Greeting Card */}
         <View style={styles.greetingCard}>
           <View style={styles.header}>
-            <View>
+            {/* Left Profile Icon */}
+            <TouchableOpacity>
+              <Image
+                source={require('../assets/Profile.png')}
+                style={styles.ProfileIcon}
+              />
+            </TouchableOpacity>
+
+            <View style={styles.headerTextWrapper}>
               <Text style={styles.greeting}>Hi, {host.name}!</Text>
               <View style={styles.locationRow}>
                 <Ionicons name="location-sharp" size={wp('4%')} color="#555" />
-               <Text style={styles.location}>
-                  {host.address ? host.address : `${host.location?.latitude}, ${host.location?.longitude}`}
+                <Text style={styles.location}>
+                  {host.address
+                    ? host.address
+                    : `${host.location?.latitude}, ${host.location?.longitude}`}
                 </Text>
               </View>
             </View>
-            <Ionicons name="notifications" size={wp('6%')} color="#F4D03F" />
+
+            {/* Right Side Icons */}
+            <View style={styles.rightIcons}>
+              <TouchableOpacity>
+                <Image
+                  source={require('../assets/Doorbell.png')}
+                  style={styles.DoorbellIcon}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -144,6 +164,21 @@ export default function Admin() {
           ))}
         </View>
 
+        {/* Action Buttons */}
+        <View style={styles.buttonRow}>
+          {/* ✅ Navigate to AddHostel screen */}
+          <TouchableOpacity
+            style={styles.addHostelBtn}
+            onPress={() => navigation.navigate('AddHostel')}
+          >
+            <Text style={styles.btnText}>+ Add Hostel</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.announcementBtn}>
+            <Text style={styles.btnText}>Post Announcement</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={{ height: hp('12%') }} />
       </ScrollView>
 
@@ -158,99 +193,96 @@ export default function Admin() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: hp('4%'),
+    paddingTop: hp('1%'),
     paddingHorizontal: wp('5%'),
   },
-
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   greetingCard: {
     backgroundColor: '#fff',
-    padding: wp('10%'),
-    borderRadius: wp('12%'),
-    marginTop: hp('-3.9%'),
-    marginBottom: hp('4%'),
-    marginRight: wp('-6%'),
-    marginLeft: wp('-8%'),
+    padding: hp('3%'),
+    borderRadius: wp('6%'),
+    marginTop: wp('-2%'),
+    marginBottom: hp('3%'),
+    marginLeft: wp('-5%'),
+    marginRight: wp('-5%'),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: hp('-2%'),
-    marginTop: hp('2%'),
   },
-
   headerTextWrapper: {
     flex: 1,
-    marginLeft: wp('4%'),
+    marginHorizontal: wp('2%'),
   },
-
   greeting: {
-    fontSize: hp('3%'),
+    fontSize: hp('2.6%'),
     fontWeight: '500',
+    marginTop: hp('3%'),
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: hp('0.5%'),
+    flexWrap: 'wrap',
   },
   location: {
-    marginLeft: wp('1.5%'),
+    marginLeft: wp('5%'),
     color: '#555',
     fontSize: hp('1.8%'),
+    flexShrink: 1,
+    marginTop: hp('-4.4%'),
   },
-
-  menuIcon: {
-    width: wp('7%'),
-    height: wp('6%'),
-    marginTop: hp('-3%'),
+  ProfileIcon: {
+    width: wp('10%'),
+    height: wp('10%'),
     resizeMode: 'contain',
+    marginTop: hp('1%'),
   },
- DoorbellIcon: {
+  DoorbellIcon: {
     width: wp('7%'),
-    height: wp('6%'),
-    marginTop: hp('-3%'),
-    marginLeft: wp('1%'),
+    height: wp('7%'),
     resizeMode: 'contain',
+    marginRight: wp('3%'),
+    marginTop: hp('1%'),
   },
-
+  rightIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   hostelCardWrapper: {
     paddingHorizontal: wp('2%'),
   },
-
   hostelCard: {
     backgroundColor: '#F15B5D',
     borderRadius: wp('4%'),
-    padding: wp('5%'),
+    padding: hp('4%'),
   },
   hostelTitle: {
-    fontSize: hp('4%'),
+    fontSize: hp('3.9%'),
     fontWeight: '500',
     color: '#170303ff',
   },
-  // gender: {
-  //   color: '#fff',
-  //   fontSize: hp('2%'),
-  //   marginTop: hp('0.5%'),
-  // },
   statusBadge: {
     backgroundColor: '#4CAF50',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    marginLeft: 230,
-    marginTop: hp('-2.7%'),
+    paddingVertical: hp('0.5%'),
+    paddingHorizontal: wp('3%'),
     borderRadius: 20,
-    alignSelf: 'flex-start',
-    marginVertical: 6,
+    alignSelf: 'flex-end',
+    marginTop: hp('1%'),
   },
   statusText: {
     color: '#fff',
-    fontSize: wp('3.5%'),
+    fontSize: wp('3.2%'),
   },
   description: {
     color: '#fff',
@@ -264,13 +296,11 @@ const styles = StyleSheet.create({
     marginTop: hp('1.5%'),
     color: '#000',
   },
-
   dashboardGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
-
   dashboardCard: {
     width: (wp('100%') - wp('18%')) / 2,
     backgroundColor: '#fff',
@@ -286,14 +316,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   dashboardImage: {
     width: wp('7.5%'),
     height: wp('7.5%'),
     resizeMode: 'contain',
     marginRight: wp('3.5%'),
   },
-
   dashboardText: {
     fontSize: hp('1.7%'),
     color: '#000',
@@ -301,14 +329,38 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     lineHeight: hp('2.4%'),
   },
-
   dashboardArrow: {
     position: 'absolute',
-    right: wp('2.3%'),
-    bottom: wp('-9%'),
-    marginBottom: hp('8%'),
+    right: wp('2%'),
+    top: '65%',
   },
-
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: hp('2%'),
+    marginBottom: hp('2%'),
+  },
+  addHostelBtn: {
+    flex: 1,
+    backgroundColor: '#F15B5D',
+    paddingVertical: hp('2%'),
+    marginRight: wp('2%'),
+    borderRadius: wp('3%'),
+    alignItems: 'center',
+  },
+  announcementBtn: {
+    flex: 1,
+    backgroundColor: '#007BFF',
+    paddingVertical: hp('2%'),
+    marginLeft: wp('2%'),
+    borderRadius: wp('3%'),
+    alignItems: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: hp('1.9%'),
+    fontWeight: '600',
+  },
   navbarContainer: {
     position: 'absolute',
     bottom: 0,

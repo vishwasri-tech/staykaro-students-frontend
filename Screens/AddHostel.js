@@ -67,8 +67,8 @@ export default function HostelForm() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: '#fff' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      behavior={Platform.OS === 'android' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'android' ? -40 : 0}
     >
       <ScrollView
         contentContainerStyle={styles.container}
