@@ -17,7 +17,7 @@ import { Picker } from '@react-native-picker/picker';
 const { width } = Dimensions.get('window');
 
 const facilitiesList = ['Wi-fi', 'Mess', 'Laundry', 'Water Heater', 'CCTV'];
-const hostelTypes = ['Boys', 'Girls', 'Co-ed'];
+const hostelTypes = ['Boys', 'Girls', 'Co-live'];
 
 export default function HostelForm() {
   const [form, setForm] = useState({
@@ -30,6 +30,8 @@ export default function HostelForm() {
     totalFloors: '',
     roomsPerFloor: '',
     facilities: [],
+    image1: null,
+    image2: null,
   });
 
   const toggleFacility = (facility) => {
@@ -52,15 +54,21 @@ export default function HostelForm() {
       totalFloors: '',
       roomsPerFloor: '',
       facilities: [],
+      image1: null,
+      image2: null,
     });
+  };
+
+  const handleImageUpload = (slot) => {
+    console.log(`Upload button pressed for slot ${slot}`);
+    // Image picker logic goes here
   };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: '#fff' }}
-      behavior={Platform.OS === 'android' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'android' ? 10 : 0}
-      
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
     >
       <ScrollView
         contentContainerStyle={styles.container}
@@ -78,7 +86,7 @@ export default function HostelForm() {
           returnKeyType="done"
         />
 
-        {/* Hostel Type Dropdown */}
+        {/* Hostel Type */}
         <Text style={styles.label}>Hostel Type</Text>
         <View style={styles.pickerContainer}>
           <Picker
@@ -154,7 +162,9 @@ export default function HostelForm() {
             <TextInput
               style={styles.feeInput}
               value={form.cautionDeposit}
-              onChangeText={(text) => setForm({ ...form, cautionDeposit: text })}
+              onChangeText={(text) =>
+                setForm({ ...form, cautionDeposit: text })
+              }
               keyboardType="default"
               returnKeyType="done"
             />
@@ -188,16 +198,33 @@ export default function HostelForm() {
           </View>
         </View>
 
-        {/* Room Images */}
-        <View style={styles.imageRow}>
-          <Image
-            source={require('../assets/add-hostel1.png')}
-            style={styles.roomImage}
-          />
-          <Image
-            source={require('../assets/add-hostel2.png')}
-            style={styles.roomImage}
-          />
+        {/* Upload Boxes */}
+        <View style={styles.uploadContainer}>
+          {[1, 2].map((slot) => (
+            <View key={slot} style={styles.uploadBox}>
+              <TouchableOpacity
+                onPress={() => handleImageUpload(slot)}
+                activeOpacity={0.8}
+                style={styles.uploadImageWrapper}
+              >
+                <Image
+                  source={
+                    form[`image${slot}`]
+                      ? { uri: form[`image${slot}`] }
+                      : require('../assets/add-hostel.png')
+                  }
+                  style={styles.uploadIcon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleImageUpload(slot)}
+                style={styles.uploadBoxButton}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.uploadBoxButtonText}>Upload</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
         </View>
 
         {/* Buttons */}
@@ -285,7 +312,7 @@ const styles = StyleSheet.create({
   },
   checkmarkText: {
     fontSize: 14,
-    color: '#28a745', // green checkmark
+    color: '#28a745',
   },
   facilityText: {
     fontSize: 14,
@@ -333,7 +360,7 @@ const styles = StyleSheet.create({
   },
   structureInput: {
     flex: 1,
-    height: 46,
+    height: 36,
     backgroundColor: '#f7f7f7',
     borderWidth: 1,
     borderColor: '#ddd',
@@ -341,18 +368,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 14,
   },
-  imageRow: {
+
+  // Upload Section
+  uploadContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    flexWrap: 'wrap',
+  },
+  uploadBox: {
+    width: '43%',
+    aspectRatio: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#f9f9f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginBottom: 20,
+  },
+  uploadImageWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  uploadIcon: {
+    width: 100,
+    height: 70,
+    resizeMode: 'contain',
+    marginBottom: 6,
+  },
+  uploadBoxButton: {
+    backgroundColor: '#1d76fc',
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     marginTop: 10,
   },
-  roomImage: {
-    width: width * 0.35,
-    height: width * 0.25,
-    marginTop: 15,
-    borderRadius: 15,
-    resizeMode: 'cover',
+  uploadBoxButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
+
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

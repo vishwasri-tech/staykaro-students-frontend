@@ -23,7 +23,10 @@ import {
 } from 'react-native-responsive-screen';
 
 
-const API_BASE = "http://192.168.1.8:5000";
+
+const API_BASE = "http://192.168.1.19:5000";
+
+
 
 const RegisterHostel = ({ navigation }) => {
   const route = useRoute();

@@ -184,9 +184,15 @@ const styles = StyleSheet.create({
     marginBottom: hp('-2%'),
     marginTop: hp('2%'),
   },
+
+  headerTextWrapper: {
+    flex: 1,
+    marginLeft: wp('4%'),
+  },
+
   greeting: {
     fontSize: hp('3%'),
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   locationRow: {
     flexDirection: 'row',
@@ -199,6 +205,23 @@ const styles = StyleSheet.create({
     fontSize: hp('1.8%'),
   },
 
+  menuIcon: {
+    width: wp('7%'),
+    height: wp('6%'),
+    marginTop: hp('-3%'),
+    resizeMode: 'contain',
+  },
+ DoorbellIcon: {
+    width: wp('7%'),
+    height: wp('6%'),
+    marginTop: hp('-3%'),
+    marginLeft: wp('1%'),
+    resizeMode: 'contain',
+  },
+
+  hostelCardWrapper: {
+    paddingHorizontal: wp('2%'),
+  },
 
   hostelCard: {
     backgroundColor: '#F15B5D',
@@ -207,14 +230,14 @@ const styles = StyleSheet.create({
   },
   hostelTitle: {
     fontSize: hp('4%'),
-    fontWeight: 'bold',
+    fontWeight: '500',
     color: '#170303ff',
   },
-  gender: {
-    color: '#fff',
-    fontSize: hp('2%'),
-    marginTop: hp('0.5%'),
-  },
+  // gender: {
+  //   color: '#fff',
+  //   fontSize: hp('2%'),
+  //   marginTop: hp('0.5%'),
+  // },
   statusBadge: {
     backgroundColor: '#4CAF50',
     paddingVertical: 4,
@@ -231,59 +254,60 @@ const styles = StyleSheet.create({
   },
   description: {
     color: '#fff',
-    fontSize: hp('1.8%'),
+    fontSize: hp('1.6%'),
     marginTop: hp('0.5%'),
   },
-dashboardTitle: {
-  fontSize: hp('2.4%'),
-  fontWeight: '600',
-  marginBottom: hp('2.5%'),
-  marginTop: hp('1.5%'),
-  color: '#000',
-},
+  dashboardTitle: {
+    fontSize: hp('2.4%'),
+    fontWeight: '600',
+    marginBottom: hp('2.5%'),
+    marginTop: hp('1.5%'),
+    color: '#000',
+  },
 
-dashboardGrid: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-},
+  dashboardGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
 
-dashboardCard: {
-  width: (wp('100%') - wp('18%')) / 2, // Slightly smaller to match image
-  backgroundColor: '#fff',
-  paddingVertical: hp('2%'),
-  paddingHorizontal: wp('4%'),
-  borderRadius: wp('4%'),
-  marginBottom: hp('3.5%'),
-  elevation: 4,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 5,
-  flexDirection: 'row',
-  alignItems: 'center',
-},
+  dashboardCard: {
+    width: (wp('100%') - wp('18%')) / 2,
+    backgroundColor: '#fff',
+    paddingVertical: hp('2%'),
+    paddingHorizontal: wp('4%'),
+    borderRadius: wp('4%'),
+    marginBottom: hp('3.5%'),
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 
-dashboardImage: {
-  width: wp('7.5%'),
-  height: wp('7.5%'),
-  resizeMode: 'contain',
-  marginRight: wp('3.5%'),
-},
+  dashboardImage: {
+    width: wp('7.5%'),
+    height: wp('7.5%'),
+    resizeMode: 'contain',
+    marginRight: wp('3.5%'),
+  },
 
-dashboardText: {
-  fontSize: hp('1.7%'),
-  color: '#000',
-  flex: 1,
-  flexWrap: 'wrap',
-  lineHeight: hp('2.4%'),
-},
+  dashboardText: {
+    fontSize: hp('1.7%'),
+    color: '#000',
+    flex: 1,
+    flexWrap: 'wrap',
+    lineHeight: hp('2.4%'),
+  },
 
-dashboardArrow: { position: 'absolute',
-   right: wp('2.3%'), 
-   bottom: wp('-9%'),
-    marginBottom: hp('8%'), },
-
+  dashboardArrow: {
+    position: 'absolute',
+    right: wp('2.3%'),
+    bottom: wp('-9%'),
+    marginBottom: hp('8%'),
+  },
 
   navbarContainer: {
     position: 'absolute',
