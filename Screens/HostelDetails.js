@@ -1,5 +1,5 @@
 // Screens/HostelDetails.js
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import ImageViewing from "react-native-image-viewing";
 
 const { width: WINDOW_WIDTH } = Dimensions.get("window");
 
@@ -31,7 +32,6 @@ export default function HostelDetails() {
   // modal viewer state
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
-  const scrollRef = useRef(null);
 
   // select sharing modal
   const [sharingVisible, setSharingVisible] = useState(false);
@@ -61,16 +61,16 @@ export default function HostelDetails() {
       ? hostel.gallery
       : [hostel.image, hostel.image, hostel.image, hostel.image, hostel.image];
 
+  // format for ImageViewing
+  const galleryImages = gallery.map((img) =>
+    typeof img === "number" ? img : { uri: img }
+  );
+
   const THUMB_COUNT = 4;
 
   function openViewer(index = 0) {
     setViewerIndex(index);
     setViewerVisible(true);
-    setTimeout(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTo({ x: WINDOW_WIDTH * index, animated: false });
-      }
-    }, 50);
   }
 
   // sharing options list
@@ -268,7 +268,7 @@ export default function HostelDetails() {
                   {opt.label} – ₹{opt.price}
                 </Text>
 
-                {/* Status with inline icon */}
+                {/* Status */}
                 <Text
                   style={[
                     styles.optionStatus,
@@ -313,44 +313,15 @@ export default function HostelDetails() {
         </View>
       </Modal>
 
-      {/* Viewer modal */}
-      <Modal visible={viewerVisible} animationType="fade" transparent={false}>
-        <SafeAreaView style={viewerStyles.modalContainer}>
-          <View style={viewerStyles.topBar}>
-            <TouchableOpacity
-              onPress={() => setViewerVisible(false)}
-              style={viewerStyles.closeBtn}
-            >
-              <Text style={viewerStyles.closeTxt}>Close</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-            horizontal
-            pagingEnabled
-            ref={scrollRef}
-            showsHorizontalScrollIndicator={false}
-            contentOffset={{ x: WINDOW_WIDTH * viewerIndex, y: 0 }}
-          >
-            {gallery.map((img, i) => (
-              <View
-                style={{
-                  width: WINDOW_WIDTH,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                key={i}
-              >
-                <Image
-                  source={img}
-                  style={viewerStyles.fullImage}
-                  resizeMode="contain"
-                />
-              </View>
-            ))}
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
+      {/* Modern Viewer */}
+      <ImageViewing
+        images={galleryImages}
+        imageIndex={viewerIndex}
+        visible={viewerVisible}
+        onRequestClose={() => setViewerVisible(false)}
+        swipeToCloseEnabled={true}
+        doubleTapToZoomEnabled={true}
+      />
     </SafeAreaView>
   );
 }
@@ -527,7 +498,7 @@ const styles = StyleSheet.create({
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "transparent", // no black shadow
+    backgroundColor: "transparent",
     justifyContent: "flex-end",
   },
   modalBox: {
@@ -589,25 +560,17 @@ const styles = StyleSheet.create({
   },
   selectTextModal: { color: "#fff", fontSize: 16, fontWeight: "700" },
 
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { fontSize: 16, marginBottom: 20 },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: { fontSize: 16, color: "#777", marginBottom: 16 },
   goBackBtn: {
     backgroundColor: "red",
-    padding: 10,
-    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
   },
-  goBackText: { color: "white", fontWeight: "600" },
-});
-
-const viewerStyles = StyleSheet.create({
-  modalContainer: { flex: 1, backgroundColor: "black" },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    padding: 12,
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  closeBtn: { paddingHorizontal: 14, paddingVertical: 8 },
-  closeTxt: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  fullImage: { width: "100%", height: "100%" },
+  goBackText: { color: "#fff", fontWeight: "700" },
 });

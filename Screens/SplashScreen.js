@@ -26,7 +26,7 @@ const SplashScreen = () => {
       const timer = setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
           if (roleSelected === 'student') {
-            navigation.replace('BannerPage');
+            navigation.replace('HomePage');
           } else if (roleSelected === 'owner') {
             navigation.replace('Admin');
           }

@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import {
   View,
@@ -22,12 +13,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useNavigation } from "@react-navigation/native"; // <-- added
+import { useNavigation } from "@react-navigation/native"; 
 import BottomNavBar from "./BottomNavbar";
-import FilterModal from "./FilterModal"; // ✅ import modal
+import FilterModal from "./FilterModal"; 
 
 export default function HomePage() {
-  const navigation = useNavigation(); // <-- added
+  const navigation = useNavigation();
 
   // ✅ Hostel data categorized
   const hostelsData = {
@@ -35,16 +26,22 @@ export default function HomePage() {
       { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/cl1.png") },
       { id: "2", name: "French Hostel", price: "₹5500.00", rating: 4.8, image: require("../assets/hostel2.png") },
       { id: "3", name: "Elite Hostel", price: "₹6000.00", rating: 4.7, image: require("../assets/hostel3.png") },
+      { id: "14", name: "Skyline Hostel", price: "₹5900.00", rating: 4.6, image: require("../assets/gh6.png") },
+      { id: "15", name: "Heritage Boys Hostel", price: "₹6100.00", rating: 4.9, image: require("../assets/gh7.png") },
     ],
     girls: [
       { id: "4", name: "Grace Hostel", price: "₹5000.00", rating: 4.6, image: require("../assets/boys1.png") },
       { id: "5", name: "Queen Hostel", price: "₹5200.00", rating: 4.9, image: require("../assets/boys2.png") },
       { id: "6", name: "Elite Girls Hostel", price: "₹5300.00", rating: 4.7, image: require("../assets/boys3.png") },
+      { id: "16", name: "Lotus Girls Hostel", price: "₹5400.00", rating: 4.8, image: require("../assets/gh5.png") },
+      { id: "17", name: "Pearl Residency", price: "₹5600.00", rating: 4.7, image: require("../assets/gh3.png") },
     ],
     coliving: [
       { id: "7", name: "Modern Living", price: "₹6200.00", rating: 4.9, image: require("../assets/hostel1.png") },
       { id: "8", name: "Shared Space", price: "₹5800.00", rating: 4.5, image: require("../assets/hostel2.png") },
       { id: "9", name: "Open Stay", price: "₹6000.00", rating: 4.8, image: require("../assets/hostel3.png") },
+      { id: "18", name: "Urban Nest", price: "₹6400.00", rating: 4.9, image: require("../assets/gh6.png") },
+      { id: "19", name: "Hive Living", price: "₹6150.00", rating: 4.6, image: require("../assets/gh7-.png") },
     ],
   };
 
@@ -354,4 +351,3 @@ const styles = StyleSheet.create({
     tintColor: "#000",
   },
 });
-
