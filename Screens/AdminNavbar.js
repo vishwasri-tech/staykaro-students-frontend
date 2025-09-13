@@ -23,18 +23,18 @@ const AdminNavbar = () => {
       </TouchableOpacity>
 
       {/* Student Applications */}
-      <TouchableOpacity onPress={() => navigation.navigate('StudentApplications')}>
+      <TouchableOpacity onPress={() => navigation.navigate('AddHostel')}>
         <Image
           source={require('../assets/Admin2.png')}
-          style={[styles.icon, isActive('StudentApplications') && styles.activeIcon]}
+          style={[styles.icon, isActive('AddHostel') && styles.activeIcon]}
         />
       </TouchableOpacity>
 
       {/* Room Management */}
-      <TouchableOpacity onPress={() => navigation.navigate('Admin3')}>
+      <TouchableOpacity onPress={() => navigation.navigate('StudentApplications')}>
         <Image
           source={require('../assets/Admin3.png')}
-          style={[styles.icon, isActive('Admin3') && styles.activeIcon]}
+          style={[styles.icon, isActive('StudentApplications') && styles.activeIcon]}
         />
       </TouchableOpacity>
 
@@ -46,13 +46,7 @@ const AdminNavbar = () => {
         />
       </TouchableOpacity>
 
-      {/* Complaint Management */}
-      <TouchableOpacity onPress={() => navigation.navigate('Admin5')}>
-        <Image
-          source={require('../assets/Admin5.png')}
-          style={[styles.icon, isActive('Admin5') && styles.activeIcon]}
-        />
-      </TouchableOpacity>
+    
     </View>
   );
 };
