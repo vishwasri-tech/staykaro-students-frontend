@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   FlatList,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -15,10 +16,52 @@ import {
 } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native"; 
 import BottomNavBar from "./BottomNavbar";
-import FilterModal from "./FilterModal"; 
+import FilterModal from "./FilterModal"; // ✅ import modal
+import * as Location from "expo-location";
 
 export default function HomePage() {
   const navigation = useNavigation();
+
+  const [location, setLocation] = useState(null);
+  const [address, setAddress] = useState("Fetching location...");
+
+  useEffect(() => {
+    (async () => {
+      // Request permission
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Enable location permissions in settings."
+        );
+        setAddress("Permission Denied");
+        return;
+      }
+
+      try {
+        // Get current location
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation.coords);
+
+        // Reverse geocode to get address
+        let geocode = await Location.reverseGeocodeAsync(
+          currentLocation.coords
+        );
+        if (geocode.length > 0) {
+          const { name, street, subregion, district, city, region, country } =
+            geocode[0];
+
+          let formattedAddress = `${
+            name || street || subregion || district
+          }, ${city || region}`;
+          setAddress(formattedAddress);
+        }
+      } catch (error) {
+        console.log("Error fetching location:", error);
+        setAddress("Unable to fetch location");
+      }
+    })();
+  }, []);
 
   // ✅ Hostel data categorized
   const hostelsData = {
@@ -73,7 +116,7 @@ export default function HomePage() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.locationContainer}>
             <Image source={require("../assets/location.png")} style={styles.iconSmall} />
-            <Text style={styles.locationText}>Hyderabad, Telangana</Text>
+            <Text style={styles.locationText}>{address}</Text>
             <Image source={require("../assets/down-arrow.png")} style={[styles.iconSmall, { marginLeft: wp("2%") }]} />
           </TouchableOpacity>
           <TouchableOpacity>
