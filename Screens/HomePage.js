@@ -84,7 +84,7 @@ export default function HomePage() {
       { id: "8", name: "Shared Space", price: "₹5800.00", rating: 4.5, image: require("../assets/hostel2.png") },
       { id: "9", name: "Open Stay", price: "₹6000.00", rating: 4.8, image: require("../assets/hostel3.png") },
       { id: "18", name: "Urban Nest", price: "₹6400.00", rating: 4.9, image: require("../assets/gh6.png") },
-      { id: "19", name: "Hive Living", price: "₹6150.00", rating: 4.6, image: require("../assets/gh7-.png") },
+      { id: "19", name: "Hive Living", price: "₹6150.00", rating: 4.6, image: require("../assets/gh7.png") },
     ],
   };
 
