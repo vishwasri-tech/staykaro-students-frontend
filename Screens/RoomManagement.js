@@ -46,6 +46,12 @@ const roomsData = [
 
 export default function RoomManagement() {
   const [rooms, setRooms] = useState(roomsData);
+
+  // Modal states for filters
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [filterType, setFilterType] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState("");
@@ -69,18 +75,48 @@ export default function RoomManagement() {
     setModalVisible(true);
   };
 
+  const openFilterModal = (type) => {
+    setFilterType(type);
+    setFilterModalVisible(true);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Room Management</Text>
 
       {/* Filters */}
       <View style={styles.filters}>
-        {["Floor No", "Block", "Type"].map((label, index) => (
-          <TouchableOpacity key={index} style={styles.dropdownBtn}>
-            <Text style={styles.dropdownText}>{label}</Text>
-            <Ionicons name="chevron-down-outline" size={16} color="#555" />
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity
+          style={styles.dropdownBtn}
+          onPress={() => openFilterModal("Floor No")}
+        >
+          <Text style={styles.dropdownText}>
+            {selectedValue && filterType === "Floor No"
+              ? selectedValue
+              : "Floor No"}
+          </Text>
+          <Ionicons name="chevron-down-outline" size={16} color="#555" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.dropdownBtn}
+          onPress={() => openFilterModal("Block")}
+        >
+          <Text style={styles.dropdownText}>
+            {selectedValue && filterType === "Block" ? selectedValue : "Block"}
+          </Text>
+          <Ionicons name="chevron-down-outline" size={16} color="#555" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.dropdownBtn}
+          onPress={() => openFilterModal("Type")}
+        >
+          <Text style={styles.dropdownText}>
+            {selectedValue && filterType === "Type" ? selectedValue : "Type"}
+          </Text>
+          <Ionicons name="chevron-down-outline" size={16} color="#555" />
+        </TouchableOpacity>
       </View>
 
       {/* Rooms */}
@@ -160,6 +196,63 @@ export default function RoomManagement() {
             <TouchableOpacity
               style={styles.cancelBtn}
               onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Filter Picker Modal */}
+      <Modal
+        transparent={true}
+        visible={filterModalVisible}
+        animationType="fade"
+        onRequestClose={() => setFilterModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>{filterType}</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedValue}
+                onValueChange={(val) => setSelectedValue(val)}
+              >
+                <Picker.Item label={`Select ${filterType}`} value="" />
+                {filterType === "Floor No" && (
+                  <>
+                    <Picker.Item label="Floor 1" value="Floor 1" />
+                    <Picker.Item label="Floor 2" value="Floor 2" />
+                    <Picker.Item label="Floor 3" value="Floor 3" />
+                  </>
+                )}
+                {filterType === "Block" && (
+                  <>
+                    <Picker.Item label="Block A" value="Block A" />
+                    <Picker.Item label="Block B" value="Block B" />
+                    <Picker.Item label="Block C" value="Block C" />
+                  </>
+                )}
+                {filterType === "Type" && (
+                  <>
+                    <Picker.Item label="1-bed AC" value="1-bed AC" />
+                    <Picker.Item label="2-bed AC" value="2-bed AC" />
+                    <Picker.Item label="3-bed Non-AC" value="3-bed Non-AC" />
+                  </>
+                )}
+              </Picker>
+            </View>
+
+            <TouchableOpacity
+              style={styles.confirmBtn}
+              onPress={() => setFilterModalVisible(false)}
+            >
+              <Text style={styles.confirmText}>Apply</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.cancelBtn}
+              onPress={() => setFilterModalVisible(false)}
             >
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
