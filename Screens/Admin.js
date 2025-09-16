@@ -13,74 +13,11 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { useNavigation } from '@react-navigation/native';
 
 export default function Admin() {
+  const navigation = useNavigation();
+
   const handleMenuPress = () => {
     navigation.navigate('Setting');
   };
-  const [host, setHost] = useState(null);
-  const navigation = useNavigation(); // navigation hook
-
-  useEffect(() => {
-    const fetchRecentHost = async () => {
-      try {
-        const res = await axios.get(`http://192.168.1.5:5000/api/admin/recent`);
-        setHost(res.data);
-        if (res.data?.id) {
-          getAndUpdateLocation(res.data.id);
-        }
-      } catch (err) {
-        console.log('Error fetching recent host:', err);
-      }
-    };
-
-    const getAndUpdateLocation = async (hostId) => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.log('Permission denied for location');
-          return;
-        }
-
-        let loc = await Location.getCurrentPositionAsync({});
-        let coords = loc.coords;
-
-        let address = await Location.reverseGeocodeAsync({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        });
-
-        let addressText =
-          address.length > 0
-            ? `${address[0].name || address[0].street || 'Unknown Area'}, ${address[0].city || ''}, ${address[0].region || ''}`
-            : `Lat: ${coords.latitude.toFixed(3)}, Lng: ${coords.longitude.toFixed(3)}`;
-
-        await axios.put(`http://192.168.1.5:5000/api/admin/update-location/${hostId}`, {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          address: addressText,
-        });
-
-        setHost((prev) =>
-          prev
-            ? { ...prev, address: addressText, location: { latitude: coords.latitude, longitude: coords.longitude } }
-            : prev
-        );
-
-        console.log('Location updated on backend:', addressText);
-      } catch (err) {
-        console.log('Error fetching/updating location:', err);
-      }
-    };
-
-    fetchRecentHost();
-  }, []);
-
-  if (!host) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={{ flex: 1 }}>
