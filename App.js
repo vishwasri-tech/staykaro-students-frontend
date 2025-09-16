@@ -19,7 +19,6 @@ import HomePage from "./Screens/HomePage";
 import HostelDetails from "./Screens/HostelDetails";
 import Setting from "./Screens/Setting";
 import RoomManagement from "./Screens/RoomManagement";
-import FeeManagement from "./Screens/FeeManagement";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -50,7 +49,6 @@ export default function App() {
         <Stack.Screen name='StudentApplications' component={StudentApplications}/> 
         <Stack.Screen name='Setting' component={Setting}/>
         <Stack.Screen name='RoomManagement' component={RoomManagement}/>
-        <Stack.Screen name='FeeManagement' component={FeeManagement}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

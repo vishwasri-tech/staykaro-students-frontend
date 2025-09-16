@@ -29,8 +29,7 @@ export default function Settings() {
         
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}
-      onPress={() => navigation.navigate('FeeManagement')} >
+      <TouchableOpacity style={styles.menuItem}>
         <Image source={require('../assets/setting2.png')} style={styles.menuIconImage} />
         <Text style={styles.menuText}>Fee Management</Text>
         <Ionicons name="chevron-forward" size={16} color="#aaa" />
