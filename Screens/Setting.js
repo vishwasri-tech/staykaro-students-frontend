@@ -29,13 +29,15 @@ export default function Settings() {
         
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity style={styles.menuItem}
+      onPress={() => navigation.navigate('FeeManagement')}>
         <Image source={require('../assets/setting2.png')} style={styles.menuIconImage} />
         <Text style={styles.menuText}>Fee Management</Text>
         <Ionicons name="chevron-forward" size={16} color="#aaa" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity style={styles.menuItem}
+      onPress={() => navigation.navigate('ComplaintManagement')}>
         <Image source={require('../assets/setting3.png')} style={styles.menuIconImage} />
         <Text style={styles.menuText}>Complaint Management</Text>
         <Ionicons name="chevron-forward" size={16} color="#aaa" />

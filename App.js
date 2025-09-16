@@ -17,11 +17,11 @@ import ForgotPassword from "./Screens/ForgotPassword";
 import RegisterHostel from "./Screens/RegisterHostel";
 import HomePage from "./Screens/HomePage";
 import HostelDetails from "./Screens/HostelDetails";
-
 import Setting from "./Screens/Setting";
 import RoomManagement from "./Screens/RoomManagement";
-
 import BookingPayment from "./Screens/BookingPayment";
+import FeeManagement from "./Screens/FeeManagement";
+import ComplaintManagement from "./Screens/ComplaintManagement";
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +54,8 @@ export default function App() {
         <Stack.Screen name='StudentApplications' component={StudentApplications}/> 
         <Stack.Screen name='Setting' component={Setting}/>
         <Stack.Screen name='RoomManagement' component={RoomManagement}/>
+        <Stack.Screen name='FeeManagement' component={FeeManagement}/>
+         <Stack.Screen name='ComplaintManagement' component={ComplaintManagement}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
