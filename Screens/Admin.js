@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,17 +6,50 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AdminNavbar from './AdminNavbar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function Admin() {
   const navigation = useNavigation();
+  const [host, setHost] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleMenuPress = () => {
     navigation.navigate('Setting');
+  };
+
+  useEffect(() => {
+    fetchRecentHost();
+  }, []);
+
+  const fetchRecentHost = async () => {
+    try {
+      const response = await axios.get('http://192.168.1.3:5000/api/admin/recent'); // Replace <YOUR_IP> with your backend IP
+      setHost(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching recent host:', error);
+      setLoading(false);
+    }
+  };
+
+  const updateHostLocation = async (hostId, latitude, longitude, address) => {
+    try {
+      const response = await axios.put(`http://192.168.1.3:5000/api/admin/update-location/${hostId}`, {
+        latitude,
+        longitude,
+        address,
+      });
+      console.log('Location updated:', response.data);
+      fetchRecentHost(); // Refresh host info
+    } catch (error) {
+      console.error('Error updating location:', error);
+    }
   };
 
   return (
@@ -25,10 +58,12 @@ export default function Admin() {
         {/* Greeting Layout */}
         <View style={styles.greetingBox}>
           <View>
-            <Text style={styles.greeting}>Hi, Chandhu !</Text>
+            <Text style={styles.greeting}>Hi, {host?.name || 'Guest'}!</Text>
             <View style={styles.locationRow}>
               <Ionicons name="location-sharp" size={wp('4%')} color="#555" />
-              <Text style={styles.location}>Begumpet, Hyderabad</Text>
+              <Text style={styles.location}>
+                {host?.address || (host?.location ? `${host.location.latitude}, ${host.location.longitude}` : 'N/A')}
+              </Text>
             </View>
           </View>
 
@@ -49,17 +84,23 @@ export default function Admin() {
         </View>
 
         {/* Hostel Card */}
-        <View style={styles.hostelCard}>
-          <Text style={styles.hostelTitle}>Michael’s Boys Hostel</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#000" style={{ marginVertical: hp('5%') }} />
+        ) : host ? (
+          <View style={styles.hostelCard}>
+            <Text style={styles.hostelTitle}>{host.hostelName}</Text>
 
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>Active</Text>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>Active</Text>
+            </View>
+
+            <Text style={styles.description}>
+              ✨ Hygienic rooms with support service at affordable prices
+            </Text>
           </View>
-
-          <Text style={styles.description}>
-            ✨ Hygienic rooms with support service at affordable prices
-          </Text>
-        </View>
+        ) : (
+          <Text style={{ textAlign: 'center', marginVertical: hp('5%') }}>No host data available</Text>
+        )}
 
         {/* Dashboard Summary */}
         <Text style={styles.dashboardTitle}>Dashboard Summary</Text>
@@ -163,7 +204,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingVertical: hp('0.5%'),
     borderRadius: wp('3%'),
-    marginTop: hp('-1%'),
+    marginTop: hp('2%'),
     marginBottom: hp('1.5%'),
     marginLeft: 'auto',
   },
