@@ -219,12 +219,9 @@ export default function HostelDetails() {
               ]}
               disabled={!selectedSharing || selectedSharing.status === "full"}
               onPress={() => {
-                Alert.alert(
-                  "Booking Confirmed",
-                  `You selected ${selectedSharing.label} – ₹${selectedSharing.price}`
-                );
-                setSelectedSharing(null);
-              }}
+  navigation.navigate("BookingPayment", { selectedSharing });
+}}
+
             >
               <Text style={styles.bookText}>Book now</Text>
             </TouchableOpacity>

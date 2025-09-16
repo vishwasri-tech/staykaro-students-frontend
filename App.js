@@ -17,8 +17,12 @@ import ForgotPassword from "./Screens/ForgotPassword";
 import RegisterHostel from "./Screens/RegisterHostel";
 import HomePage from "./Screens/HomePage";
 import HostelDetails from "./Screens/HostelDetails";
+
 import Setting from "./Screens/Setting";
 import RoomManagement from "./Screens/RoomManagement";
+
+import BookingPayment from "./Screens/BookingPayment";
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -41,6 +45,7 @@ export default function App() {
         
         {/* Hostel details screen (opened from HomePage) */}
         <Stack.Screen name="HostelDetails" component={HostelDetails} />
+        <Stack.Screen name="BookingPayment" component={BookingPayment} />
         <Stack.Screen name="HomePage" component={HomePage} />
         <Stack.Screen name="BottomNavbar" component={BottomNavbar} />
         <Stack.Screen name="Admin" component={Admin} />
