@@ -10,11 +10,15 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
+const API_BASE = 'http://192.168.1.3:5000/api/hostel';
 
 const facilitiesList = ['Wi-fi', 'Mess', 'Laundry', 'Water Heater', 'CCTV'];
 const hostelTypes = ['Boys', 'Girls', 'Co-live'];
@@ -33,6 +37,36 @@ export default function HostelForm() {
     image1: null,
     image2: null,
   });
+  // Request permissions and pick image
+  const handleImagePick = async (slot) => {
+    try {
+      // Request media library permissions
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        Alert.alert('Permission Denied', 'Please grant permission to access the media library.');
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Use MediaTypeOptions
+        allowsEditing: false,
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const image = result.assets[0];
+        setForm((prev) => ({
+          ...prev,
+          [`image${slot}`]: image.uri, // Store local URI
+        }));
+      }
+    } catch (err) {
+      console.error('Image pick error:', err.message);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
 
   const toggleFacility = (facility) => {
     setForm((prev) => {
@@ -59,10 +93,30 @@ export default function HostelForm() {
     });
   };
 
-  const handleImageUpload = (slot) => {
-    console.log(`Upload button pressed for slot ${slot}`);
-    // Image picker logic goes here
+     const handleSave = async () => {
+    try {
+      const payload = {
+        ...form,
+        facilities: form.facilities,
+        images: [form.image1, form.image2].filter((img) => img !== null),
+      };
+
+      const res = await axios.post(`${API_BASE}/add`, payload);
+
+      if (res.data.success) {
+        Alert.alert('Success', 'Hostel saved successfully!');
+        handleReset();
+      }
+    } catch (err) {
+      console.error('Save error:', err.response?.data || err.message);
+      Alert.alert('Error', 'Failed to save hostel');
+    }
   };
+
+  // const handleImageUpload = (slot) => {
+  //   console.log(`Upload button pressed for slot ${slot}`);
+  //   // Image picker logic goes here
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -203,7 +257,7 @@ export default function HostelForm() {
           {[1, 2].map((slot) => (
             <View key={slot} style={styles.uploadBox}>
               <TouchableOpacity
-                onPress={() => handleImageUpload(slot)}
+                onPress={() => handleImagePick(slot)}
                 activeOpacity={0.8}
                 style={styles.uploadImageWrapper}
               >
@@ -217,7 +271,7 @@ export default function HostelForm() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => handleImageUpload(slot)}
+                onPress={() => handleImagePick(slot)}
                 style={styles.uploadBoxButton}
                 activeOpacity={0.8}
               >
@@ -229,20 +283,10 @@ export default function HostelForm() {
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
-          <Button
-            mode="contained"
-            onPress={() => console.log(form)}
-            style={styles.saveButton}
-            labelStyle={styles.buttonLabel}
-          >
+         <Button mode="contained" onPress={handleSave} style={styles.saveButton}>
             Save
           </Button>
-          <Button
-            mode="contained"
-            onPress={handleReset}
-            style={styles.resetButton}
-            labelStyle={styles.buttonLabel}
-          >
+          <Button mode="contained" onPress={handleReset} style={styles.resetButton}>
             Reset
           </Button>
         </View>
