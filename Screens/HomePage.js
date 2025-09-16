@@ -15,7 +15,6 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native"; 
-import BottomNavBar from "./BottomNavbar";
 import FilterModal from "./FilterModal"; // ✅ import modal
 import * as Location from "expo-location";
 
@@ -27,7 +26,6 @@ export default function HomePage() {
 
   useEffect(() => {
     (async () => {
-      // Request permission
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
@@ -39,16 +37,14 @@ export default function HomePage() {
       }
 
       try {
-        // Get current location
         let currentLocation = await Location.getCurrentPositionAsync({});
         setLocation(currentLocation.coords);
 
-        // Reverse geocode to get address
         let geocode = await Location.reverseGeocodeAsync(
           currentLocation.coords
         );
         if (geocode.length > 0) {
-          const { name, street, subregion, district, city, region, country } =
+          const { name, street, subregion, district, city, region } =
             geocode[0];
 
           let formattedAddress = `${
@@ -63,7 +59,6 @@ export default function HomePage() {
     })();
   }, []);
 
-  // ✅ Hostel data categorized
   const hostelsData = {
     boys: [
       { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/cl1.png") },
@@ -95,7 +90,6 @@ export default function HomePage() {
     ? hostelsData[selectedCategory]
     : hostelsData[selectedCategory].slice(0, 2);
 
-  // ✅ Nearby Hostels Data
   const nearbyHostels = [
     { id: "10", name: "Sri Sai Hostel", location: "Begumpet, Hyd", price: "₹4800.00", rating: 4.8, image: require("../assets/gh3.png") },
     { id: "11", name: "Shanthi Hostel", location: "Ameerpet, Hyd", price: "₹5300.00", rating: 4.8, image: require("../assets/gh5.png") },
@@ -106,7 +100,6 @@ export default function HomePage() {
   const [showAllNearby, setShowAllNearby] = useState(false);
   const displayedNearby = showAllNearby ? nearbyHostels : nearbyHostels.slice(0, 2);
 
-  // ✅ State for Filter Modal
   const [filterVisible, setFilterVisible] = useState(false);
 
   return (
@@ -158,13 +151,12 @@ export default function HomePage() {
             <Text style={selectedCategory === "coliving" ? styles.categoryTextActive : styles.categoryText}>Co-living</Text>
           </TouchableOpacity>
 
-          {/* Show All toggle */}
           <TouchableOpacity onPress={() => setShowAllTop(!showAllTop)}>
             <Text style={styles.showAll1}>{showAllTop ? "Show less" : "Show all"}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Top Hostels - Horizontal */}
+        {/* Top Hostels */}
         <FlatList
           data={displayedHostels}
           keyExtractor={(item) => item.id}
@@ -216,7 +208,36 @@ export default function HomePage() {
       </ScrollView>
 
       {/* ✅ Bottom Navbar Fixed */}
-      <BottomNavBar />
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigation.navigate("HomePage")}>
+          <Image
+            source={require("../assets/home.png")}
+            style={[styles.footerIcon, { tintColor: "#000" }]}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("SearchPage", { hostelsData })}>
+          <Image
+            source={require("../assets/Search.png")}
+            style={styles.footerIcon}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate("Bookings")}>
+          <Image
+            source={require("../assets/document.png")}
+            style={styles.footerIcon}
+          />
+        </TouchableOpacity>
+
+        
+
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <Image
+            source={require("../assets/user.png")}
+            style={styles.footerIcon}
+          />
+        </TouchableOpacity>
+      </View>
 
       {/* ✅ Filter Modal */}
       <FilterModal visible={filterVisible} onClose={() => setFilterVisible(false)} />
@@ -390,6 +411,26 @@ const styles = StyleSheet.create({
   iconSmall: {
     width: wp("5%"),
     height: wp("5%"),
+    resizeMode: "contain",
+    tintColor: "#000",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: hp("8%"),
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    elevation: 5,
+  },
+  footerIcon: {
+    width: wp("6%"),
+    height: wp("6%"),
     resizeMode: "contain",
     tintColor: "#000",
   },

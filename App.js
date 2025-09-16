@@ -17,7 +17,7 @@ import ForgotPassword from "./Screens/ForgotPassword";
 import RegisterHostel from "./Screens/RegisterHostel";
 import HomePage from "./Screens/HomePage";
 import HostelDetails from "./Screens/HostelDetails";
-
+import SearchPage from "./Screens/SearchPage";
 import Setting from "./Screens/Setting";
 import RoomManagement from "./Screens/RoomManagement";
 
@@ -47,6 +47,7 @@ export default function App() {
         <Stack.Screen name="HostelDetails" component={HostelDetails} />
         <Stack.Screen name="BookingPayment" component={BookingPayment} />
         <Stack.Screen name="HomePage" component={HomePage} />
+        <Stack.Screen name="SearchPage" component={SearchPage} />
         <Stack.Screen name="BottomNavbar" component={BottomNavbar} />
         <Stack.Screen name="Admin" component={Admin} />
         <Stack.Screen name="AdminNavbar" component={AdminNavbar} />

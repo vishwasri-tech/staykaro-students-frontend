@@ -11,7 +11,7 @@ export default function BottomNavBar() {
       {/* Home */}
       <TouchableOpacity style={styles.iconContainer}>
         <Image
-          source={require("../assets/Home.png")}
+          source={require("../assets/home.png")}
           style={styles.icon}
           resizeMode="contain"
         />
