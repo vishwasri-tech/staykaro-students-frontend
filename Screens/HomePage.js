@@ -4,17 +4,16 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Image,
   ScrollView,
   FlatList,
-  Alert
+  Alert,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import FilterModal from "./FilterModal"; // ✅ import modal
 import * as Location from "expo-location";
 
@@ -59,6 +58,7 @@ export default function HomePage() {
     })();
   }, []);
 
+  // ✅ Updated with 2 more hostels per category
   const hostelsData = {
     boys: [
       { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/cl1.png") },
@@ -66,6 +66,8 @@ export default function HomePage() {
       { id: "3", name: "Elite Hostel", price: "₹6000.00", rating: 4.7, image: require("../assets/hostel3.png") },
       { id: "14", name: "Skyline Hostel", price: "₹5900.00", rating: 4.6, image: require("../assets/gh6.png") },
       { id: "15", name: "Heritage Boys Hostel", price: "₹6100.00", rating: 4.9, image: require("../assets/gh7.png") },
+      { id: "20", name: "City Pride Hostel", price: "₹5700.00", rating: 4.7, image: require("../assets/gh3.png") },
+      { id: "21", name: "GreenView Boys Hostel", price: "₹6000.00", rating: 4.8, image: require("../assets/gh6.png") },
     ],
     girls: [
       { id: "4", name: "Grace Hostel", price: "₹5000.00", rating: 4.6, image: require("../assets/boys1.png") },
@@ -73,6 +75,8 @@ export default function HomePage() {
       { id: "6", name: "Elite Girls Hostel", price: "₹5300.00", rating: 4.7, image: require("../assets/boys3.png") },
       { id: "16", name: "Lotus Girls Hostel", price: "₹5400.00", rating: 4.8, image: require("../assets/gh5.png") },
       { id: "17", name: "Pearl Residency", price: "₹5600.00", rating: 4.7, image: require("../assets/gh3.png") },
+      { id: "22", name: "Sunshine Girls Hostel", price: "₹5500.00", rating: 4.8, image: require("../assets/gh6.png") },
+      { id: "23", name: "Meadow Residency", price: "₹5700.00", rating: 4.6, image: require("../assets/gh7.png") },
     ],
     coliving: [
       { id: "7", name: "Modern Living", price: "₹6200.00", rating: 4.9, image: require("../assets/hostel1.png") },
@@ -80,6 +84,8 @@ export default function HomePage() {
       { id: "9", name: "Open Stay", price: "₹6000.00", rating: 4.8, image: require("../assets/hostel3.png") },
       { id: "18", name: "Urban Nest", price: "₹6400.00", rating: 4.9, image: require("../assets/gh6.png") },
       { id: "19", name: "Hive Living", price: "₹6150.00", rating: 4.6, image: require("../assets/gh7.png") },
+      { id: "24", name: "Community Hub", price: "₹6300.00", rating: 4.8, image: require("../assets/gh3.png") },
+      { id: "25", name: "Nest Living", price: "₹6100.00", rating: 4.7, image: require("../assets/gh5.png") },
     ],
   };
 
@@ -90,15 +96,19 @@ export default function HomePage() {
     ? hostelsData[selectedCategory]
     : hostelsData[selectedCategory].slice(0, 2);
 
+  // ✅ Nearby Hostels Updated (Added 2 more)
   const nearbyHostels = [
     { id: "10", name: "Sri Sai Hostel", location: "Begumpet, Hyd", price: "₹4800.00", rating: 4.8, image: require("../assets/gh3.png") },
     { id: "11", name: "Shanthi Hostel", location: "Ameerpet, Hyd", price: "₹5300.00", rating: 4.8, image: require("../assets/gh5.png") },
     { id: "12", name: "BlueSky Hostel", location: "Madhapur, Hyd", price: "₹5000.00", rating: 4.6, image: require("../assets/gh6.png") },
     { id: "13", name: "Sunrise Hostel", location: "Kukatpally, Hyd", price: "₹5500.00", rating: 4.7, image: require("../assets/gh7.png") },
+    { id: "26", name: "LakeView Hostel", location: "Gachibowli, Hyd", price: "₹5600.00", rating: 4.9, image: require("../assets/boys4.png") },
+    { id: "27", name: "Harmony Hostel", location: "Secunderabad, Hyd", price: "₹5200.00", rating: 4.7, image: require("../assets/boys5.png") },
   ];
 
+  // ✅ Show 3 nearby by default
   const [showAllNearby, setShowAllNearby] = useState(false);
-  const displayedNearby = showAllNearby ? nearbyHostels : nearbyHostels.slice(0, 2);
+  const displayedNearby = showAllNearby ? nearbyHostels : nearbyHostels.slice(0, 3);
 
   const [filterVisible, setFilterVisible] = useState(false);
 
@@ -120,15 +130,6 @@ export default function HomePage() {
         {/* Heading */}
         <Text style={styles.heading1}>Discover your</Text>
         <Text style={styles.heading2}>perfect place to stay</Text>
-
-        {/* Search Bar */}
-        <View style={styles.searchBar}>
-          <Image source={require("../assets/Search.png")} style={styles.iconSmall} />
-          <TextInput placeholder="Search hostel" style={styles.searchInput} placeholderTextColor="#999" />
-          <TouchableOpacity onPress={() => setFilterVisible(true)}>
-            <Image source={require("../assets/filter.png")} style={styles.iconSmall} />
-          </TouchableOpacity>
-        </View>
 
         {/* Categories */}
         <View style={styles.categories}>
@@ -179,6 +180,39 @@ export default function HomePage() {
           )}
         />
 
+        {/* ✅ Nearby Services Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Nearby Services</Text>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: wp("5%"), marginTop: hp("1%") }}
+        >
+          <TouchableOpacity style={styles.serviceCard}>
+            <Image source={require("../assets/food.png")} style={styles.serviceIcon} />
+            <Text style={styles.serviceText}>Food Court</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.serviceCard}>
+            <Image source={require("../assets/gym.png")} style={styles.serviceIcon} />
+            <Text style={styles.serviceText}>Gym</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.serviceCard}>
+            <Image source={require("../assets/park.png")} style={styles.serviceIcon} />
+            <Text style={styles.serviceText}>Park</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.serviceCard}>
+            <Image source={require("../assets/stationary.png")} style={styles.serviceIcon} />
+            <Text style={styles.serviceText}>Stationary</Text>
+          </TouchableOpacity>
+
+        
+        </ScrollView>
+
         {/* Hostels Nearby */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hostels Nearby</Text>
@@ -228,8 +262,6 @@ export default function HomePage() {
             style={styles.footerIcon}
           />
         </TouchableOpacity>
-
-        
 
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Image
@@ -287,21 +319,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: wp("5%"),
     marginBottom: hp("2%"),
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-    borderRadius: wp("10%"),
-    paddingHorizontal: wp("3%"),
-    marginHorizontal: wp("5%"),
-    marginBottom: hp("2%"),
-    paddingVertical: hp("1%"),
-  },
-  searchInput: {
-    flex: 1,
-    paddingHorizontal: wp("2%"),
-    fontSize: wp("4%"),
   },
   categories: {
     flexDirection: "row",
@@ -401,18 +418,16 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   nearbyPrice: {
-    fontSize: wp("4%"),
-    fontWeight: "600",
+    fontSize: wp("3.8%"),
+    fontWeight: "bold",
   },
   hostelRating: {
     fontSize: wp("3.5%"),
-    color: "#777",
+    color: "#555",
   },
-  iconSmall: {
-    width: wp("5%"),
-    height: wp("5%"),
-    resizeMode: "contain",
-    tintColor: "#000",
+  showAll: {
+    color: "#555",
+    fontSize: wp("4%"),
   },
   footer: {
     position: "absolute",
@@ -420,18 +435,44 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: hp("8%"),
-    backgroundColor: "#fff",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderTopColor: "#eee",
-    elevation: 5,
+    borderTopColor: "#ddd",
+    elevation: 10,
   },
   footerIcon: {
-    width: wp("6%"),
-    height: wp("6%"),
+    width: wp("7%"),
+    height: wp("7%"),
     resizeMode: "contain",
-    tintColor: "#000",
+  },
+  iconSmall: {
+    width: wp("5%"),
+    height: wp("5%"),
+    resizeMode: "contain",
+  },
+
+  // ✅ New Styles for Nearby Services
+  serviceCard: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: wp("5%"),
+    backgroundColor: "#f9f9f9",
+    borderRadius: wp("3%"),
+    padding: wp("3%"),
+    width: wp("22%"),
+  },
+  serviceIcon: {
+    width: wp("10%"),
+    height: wp("10%"),
+    resizeMode: "contain",
+    marginBottom: hp("0.5%"),
+  },
+  serviceText: {
+    fontSize: wp("3.5%"),
+    color: "#333",
+    textAlign: "center",
   },
 });
