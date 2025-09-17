@@ -352,15 +352,12 @@ const styles = StyleSheet.create({
   },
   statusOpen: {
     backgroundColor: '#e74c3c',
-    marginLeft: 280,
   },
   statusInProgress: {
     backgroundColor: '#f1c40f',
-    marginLeft: 250,
   },
   statusResolved: {
     backgroundColor: '#2ecc71',
-    marginLeft: 260,
   },
   modalOverlay: {
     flex: 1,
