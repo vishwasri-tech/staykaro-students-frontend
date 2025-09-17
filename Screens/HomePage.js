@@ -13,7 +13,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native"; 
+import BottomNavBar from "./BottomNavbar";
 import FilterModal from "./FilterModal"; // ✅ import modal
 import * as Location from "expo-location";
 
@@ -25,6 +26,7 @@ export default function HomePage() {
 
   useEffect(() => {
     (async () => {
+      // Request permission
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
@@ -36,14 +38,16 @@ export default function HomePage() {
       }
 
       try {
+        // Get current location
         let currentLocation = await Location.getCurrentPositionAsync({});
         setLocation(currentLocation.coords);
 
+        // Reverse geocode to get address
         let geocode = await Location.reverseGeocodeAsync(
           currentLocation.coords
         );
         if (geocode.length > 0) {
-          const { name, street, subregion, district, city, region } =
+          const { name, street, subregion, district, city, region, country } =
             geocode[0];
 
           let formattedAddress = `${
@@ -57,8 +61,6 @@ export default function HomePage() {
       }
     })();
   }, []);
-
-  // ✅ Updated with 2 more hostels per category
   const hostelsData = {
     boys: [
       { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/cl1.png") },
@@ -95,8 +97,6 @@ export default function HomePage() {
   const displayedHostels = showAllTop
     ? hostelsData[selectedCategory]
     : hostelsData[selectedCategory].slice(0, 2);
-
-  // ✅ Nearby Hostels Updated (Added 2 more)
   const nearbyHostels = [
     { id: "10", name: "Sri Sai Hostel", location: "Begumpet, Hyd", price: "₹4800.00", rating: 4.8, image: require("../assets/gh3.png") },
     { id: "11", name: "Shanthi Hostel", location: "Ameerpet, Hyd", price: "₹5300.00", rating: 4.8, image: require("../assets/gh5.png") },
@@ -110,6 +110,7 @@ export default function HomePage() {
   const [showAllNearby, setShowAllNearby] = useState(false);
   const displayedNearby = showAllNearby ? nearbyHostels : nearbyHostels.slice(0, 3);
 
+  // ✅ State for Filter Modal
   const [filterVisible, setFilterVisible] = useState(false);
 
   return (
@@ -152,12 +153,13 @@ export default function HomePage() {
             <Text style={selectedCategory === "coliving" ? styles.categoryTextActive : styles.categoryText}>Co-living</Text>
           </TouchableOpacity>
 
+          {/* Show All toggle */}
           <TouchableOpacity onPress={() => setShowAllTop(!showAllTop)}>
             <Text style={styles.showAll1}>{showAllTop ? "Show less" : "Show all"}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Top Hostels */}
+        {/* Top Hostels - Horizontal */}
         <FlatList
           data={displayedHostels}
           keyExtractor={(item) => item.id}
@@ -270,6 +272,8 @@ export default function HomePage() {
           />
         </TouchableOpacity>
       </View>
+      <BottomNavBar />
+
 
       {/* ✅ Filter Modal */}
       <FilterModal visible={filterVisible} onClose={() => setFilterVisible(false)} />
@@ -429,6 +433,7 @@ const styles = StyleSheet.create({
     color: "#555",
     fontSize: wp("4%"),
   },
+
   footer: {
     position: "absolute",
     bottom: 0,
