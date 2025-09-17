@@ -4,43 +4,56 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { useNavigation } from "@react-navigation/native";
 
-export default function BottomNavBar() {
+export default function BottomNavBar({ hostelsData }) {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       {/* Home */}
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate("HomePage")}
+      >
         <Image
           source={require("../assets/home.png")}
+          style={[styles.icon, { tintColor: "#000" }]}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+
+      {/* Search */}
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate("SearchPage", { hostelsData })}
+      >
+        <Image
+          source={require("../assets/Search.png")}
           style={styles.icon}
           resizeMode="contain"
         />
       </TouchableOpacity>
 
-      {/* Clock */}
-      <TouchableOpacity style={styles.iconContainer}>
+      {/* Bookings */}
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate("Bookings")}
+      >
         <Image
-          source={require("../assets/clock.png")}
+          source={require("../assets/document.png")}
           style={styles.icon}
           resizeMode="contain"
         />
       </TouchableOpacity>
 
-      {/* Map */}
-      <TouchableOpacity style={styles.iconContainer}>
+      {/* Profile */}
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate("Profile")}
+      >
         <Image
-
-          source={require("../assets/fold.png")}
-
-          style={styles.icon}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-
-      {/* profile */}
-      <TouchableOpacity style={styles.iconContainer}>
-        <Image
-          source={require("../assets/Profile.png")}
+          source={require("../assets/user.png")}
           style={styles.icon}
           resizeMode="contain"
         />
@@ -67,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   icon: {
-    width: wp("5.5%"),
+    width: wp("6%"),
     height: hp("4%"),
   },
 });
