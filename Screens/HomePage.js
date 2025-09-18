@@ -8,51 +8,90 @@ import {
   ScrollView,
   FlatList,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useNavigation } from "@react-navigation/native"; 
-import BottomNavBar from "./BottomNavbar";
+import { useNavigation } from "@react-navigation/native";
 import FilterModal from "./FilterModal"; // ✅ import modal
 import * as Location from "expo-location";
 
+// ✅ Haversine formula to calculate distance in km
+const haversineDistance = (coords1, coords2) => {
+  if (!coords1 || !coords2) return 0;
+
+  const toRad = (x) => (x * Math.PI) / 180;
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(coords2.lat - coords1.lat);
+  const dLon = toRad(coords2.lng - coords1.lng);
+  const lat1 = toRad(coords1.lat);
+  const lat2 = toRad(coords2.lat);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) *
+      Math.sin(dLon / 2) *
+      Math.cos(lat1) *
+      Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 export default function HomePage() {
   const navigation = useNavigation();
 
+  const [allHostels, setAllHostels] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState("Fetching location...");
+  const [selectedCategory, setSelectedCategory] = useState("boys");
+  const [showAllTop, setShowAllTop] = useState(false);
+  const [nearbyHostels, setNearbyHostels] = useState([]);
+  const [showAllNearby, setShowAllNearby] = useState(false);
+  const [filterVisible, setFilterVisible] = useState(false);
 
+  // Fetch hostels from backend
+  useEffect(() => {
+    const fetchHostels = async () => {
+      try {
+        const response = await fetch("http://192.168.1.5:5000/api/hostel");
+        const data = await response.json();
+
+        // Normalize type → category
+        const normalized = data.map((h) => ({
+          ...h,
+          category: h.type?.toLowerCase() === "co-live" ? "coliving" : h.type?.toLowerCase(),
+        }));
+
+        setAllHostels(normalized);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching hostels:", error);
+        setLoading(false);
+      }
+    };
+    fetchHostels();
+  }, []);
+
+  // Get user location
   useEffect(() => {
     (async () => {
-      // Request permission
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permission Denied",
-          "Enable location permissions in settings."
-        );
+        Alert.alert("Permission Denied", "Enable location permissions in settings.");
         setAddress("Permission Denied");
         return;
       }
 
       try {
-        // Get current location
         let currentLocation = await Location.getCurrentPositionAsync({});
-        setLocation(currentLocation.coords);
+        setLocation({ lat: currentLocation.coords.latitude, lng: currentLocation.coords.longitude });
 
-        // Reverse geocode to get address
-        let geocode = await Location.reverseGeocodeAsync(
-          currentLocation.coords
-        );
+        let geocode = await Location.reverseGeocodeAsync(currentLocation.coords);
         if (geocode.length > 0) {
-          const { name, street, subregion, district, city, region, country } =
-            geocode[0];
-
-          let formattedAddress = `${
-            name || street || subregion || district
-          }, ${city || region}`;
+          const { name, street, subregion, district, city, region } = geocode[0];
+          let formattedAddress = `${name || street || subregion || district}, ${city || region}`;
           setAddress(formattedAddress);
         }
       } catch (error) {
@@ -61,57 +100,39 @@ export default function HomePage() {
       }
     })();
   }, []);
-  const hostelsData = {
-    boys: [
-      { id: "1", name: "Classic Hostel", price: "₹5800.00", rating: 4.8, image: require("../assets/cl1.png") },
-      { id: "2", name: "French Hostel", price: "₹5500.00", rating: 4.8, image: require("../assets/hostel2.png") },
-      { id: "3", name: "Elite Hostel", price: "₹6000.00", rating: 4.7, image: require("../assets/hostel3.png") },
-      { id: "14", name: "Skyline Hostel", price: "₹5900.00", rating: 4.6, image: require("../assets/gh6.png") },
-      { id: "15", name: "Heritage Boys Hostel", price: "₹6100.00", rating: 4.9, image: require("../assets/gh7.png") },
-      { id: "20", name: "City Pride Hostel", price: "₹5700.00", rating: 4.7, image: require("../assets/gh3.png") },
-      { id: "21", name: "GreenView Boys Hostel", price: "₹6000.00", rating: 4.8, image: require("../assets/gh6.png") },
-    ],
-    girls: [
-      { id: "4", name: "Grace Hostel", price: "₹5000.00", rating: 4.6, image: require("../assets/boys1.png") },
-      { id: "5", name: "Queen Hostel", price: "₹5200.00", rating: 4.9, image: require("../assets/boys2.png") },
-      { id: "6", name: "Elite Girls Hostel", price: "₹5300.00", rating: 4.7, image: require("../assets/boys3.png") },
-      { id: "16", name: "Lotus Girls Hostel", price: "₹5400.00", rating: 4.8, image: require("../assets/gh5.png") },
-      { id: "17", name: "Pearl Residency", price: "₹5600.00", rating: 4.7, image: require("../assets/gh3.png") },
-      { id: "22", name: "Sunshine Girls Hostel", price: "₹5500.00", rating: 4.8, image: require("../assets/gh6.png") },
-      { id: "23", name: "Meadow Residency", price: "₹5700.00", rating: 4.6, image: require("../assets/gh7.png") },
-    ],
-    coliving: [
-      { id: "7", name: "Modern Living", price: "₹6200.00", rating: 4.9, image: require("../assets/hostel1.png") },
-      { id: "8", name: "Shared Space", price: "₹5800.00", rating: 4.5, image: require("../assets/hostel2.png") },
-      { id: "9", name: "Open Stay", price: "₹6000.00", rating: 4.8, image: require("../assets/hostel3.png") },
-      { id: "18", name: "Urban Nest", price: "₹6400.00", rating: 4.9, image: require("../assets/gh6.png") },
-      { id: "19", name: "Hive Living", price: "₹6150.00", rating: 4.6, image: require("../assets/gh7.png") },
-      { id: "24", name: "Community Hub", price: "₹6300.00", rating: 4.8, image: require("../assets/gh3.png") },
-      { id: "25", name: "Nest Living", price: "₹6100.00", rating: 4.7, image: require("../assets/gh5.png") },
-    ],
+
+  // Sort nearby hostels dynamically
+  useEffect(() => {
+    if (location && allHostels.length > 0) {
+      const sorted = [...allHostels].sort((a, b) => {
+        if (!a.coords || !b.coords) return 0;
+        return haversineDistance(location, a.coords) - haversineDistance(location, b.coords);
+      });
+      setNearbyHostels(sorted);
+    }
+  }, [location, allHostels]);
+
+  // Categorize hostels
+  const hostelsByCategory = {
+    boys: allHostels.filter((h) => h.category === "boys"),
+    girls: allHostels.filter((h) => h.category === "girls"),
+    coliving: allHostels.filter((h) => h.category === "coliving"),
   };
 
-  const [selectedCategory, setSelectedCategory] = useState("boys");
-  const [showAllTop, setShowAllTop] = useState(false);
-
   const displayedHostels = showAllTop
-    ? hostelsData[selectedCategory]
-    : hostelsData[selectedCategory].slice(0, 2);
-  const nearbyHostels = [
-    { id: "10", name: "Sri Sai Hostel", location: "Begumpet, Hyd", price: "₹4800.00", rating: 4.8, image: require("../assets/gh3.png") },
-    { id: "11", name: "Shanthi Hostel", location: "Ameerpet, Hyd", price: "₹5300.00", rating: 4.8, image: require("../assets/gh5.png") },
-    { id: "12", name: "BlueSky Hostel", location: "Madhapur, Hyd", price: "₹5000.00", rating: 4.6, image: require("../assets/gh6.png") },
-    { id: "13", name: "Sunrise Hostel", location: "Kukatpally, Hyd", price: "₹5500.00", rating: 4.7, image: require("../assets/gh7.png") },
-    { id: "26", name: "LakeView Hostel", location: "Gachibowli, Hyd", price: "₹5600.00", rating: 4.9, image: require("../assets/boys4.png") },
-    { id: "27", name: "Harmony Hostel", location: "Secunderabad, Hyd", price: "₹5200.00", rating: 4.7, image: require("../assets/boys5.png") },
-  ];
+    ? hostelsByCategory[selectedCategory]
+    : hostelsByCategory[selectedCategory].slice(0, 2);
 
-  // ✅ Show 3 nearby by default
-  const [showAllNearby, setShowAllNearby] = useState(false);
   const displayedNearby = showAllNearby ? nearbyHostels : nearbyHostels.slice(0, 3);
 
-  // ✅ State for Filter Modal
-  const [filterVisible, setFilterVisible] = useState(false);
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#0066FF" />
+        <Text>Loading hostels...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -134,35 +155,26 @@ export default function HomePage() {
 
         {/* Categories */}
         <View style={styles.categories}>
-          <TouchableOpacity
-            style={selectedCategory === "boys" ? styles.categoryActive : styles.category}
-            onPress={() => { setSelectedCategory("boys"); setShowAllTop(false); }}
-          >
-            <Text style={selectedCategory === "boys" ? styles.categoryTextActive : styles.categoryText}>Boys</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={selectedCategory === "girls" ? styles.categoryActive : styles.category}
-            onPress={() => { setSelectedCategory("girls"); setShowAllTop(false); }}
-          >
-            <Text style={selectedCategory === "girls" ? styles.categoryTextActive : styles.categoryText}>Girls</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={selectedCategory === "coliving" ? styles.categoryActive : styles.category}
-            onPress={() => { setSelectedCategory("coliving"); setShowAllTop(false); }}
-          >
-            <Text style={selectedCategory === "coliving" ? styles.categoryTextActive : styles.categoryText}>Co-living</Text>
-          </TouchableOpacity>
-
-          {/* Show All toggle */}
+          {["boys", "girls", "coliving"].map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              style={selectedCategory === cat ? styles.categoryActive : styles.category}
+              onPress={() => { setSelectedCategory(cat); setShowAllTop(false); }}
+            >
+              <Text style={selectedCategory === cat ? styles.categoryTextActive : styles.categoryText}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
           <TouchableOpacity onPress={() => setShowAllTop(!showAllTop)}>
             <Text style={styles.showAll1}>{showAllTop ? "Show less" : "Show all"}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Top Hostels - Horizontal */}
+        {/* Top Hostels */}
         <FlatList
           data={displayedHostels}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: wp("4%") }}
@@ -172,50 +184,43 @@ export default function HomePage() {
               onPress={() => navigation.navigate("HostelDetails", { hostel: item })}
               activeOpacity={0.9}
             >
-              <Image source={item.image} style={styles.topHostelImage} />
+              {item.images[0] ? (
+                <Image source={{ uri: item.images[0] }} style={styles.topHostelImage} />
+              ) : (
+                <Image source={require("../assets/hostel1.png")} style={styles.topHostelImage} />
+              )}
               <View style={styles.overlay}>
                 <Text style={styles.overlayName}>{item.name}</Text>
-                <Text style={styles.overlayPrice}>{item.price}</Text>
-                <Text style={styles.overlayRating}>⭐ {item.rating}</Text>
+                <Text style={styles.overlayPrice}>₹{item.roomRent}</Text>
+                 <Text style={styles.overlayRating}>⭐ {item.rating}</Text>
               </View>
             </TouchableOpacity>
           )}
         />
 
-        {/* ✅ Nearby Services Section */}
+        {/* Nearby Services Section */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Nearby Services</Text>
         </View>
-
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: wp("5%"), marginTop: hp("1%") }}
         >
-          <TouchableOpacity style={styles.serviceCard}>
-            <Image source={require("../assets/food.png")} style={styles.serviceIcon} />
-            <Text style={styles.serviceText}>Food Court</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.serviceCard}>
-            <Image source={require("../assets/gym.png")} style={styles.serviceIcon} />
-            <Text style={styles.serviceText}>Gym</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.serviceCard}>
-            <Image source={require("../assets/park.png")} style={styles.serviceIcon} />
-            <Text style={styles.serviceText}>Park</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.serviceCard}>
-            <Image source={require("../assets/stationary.png")} style={styles.serviceIcon} />
-            <Text style={styles.serviceText}>Stationary</Text>
-          </TouchableOpacity>
-
-        
+          {[
+            { name: "Food Court", icon: require("../assets/food.png") },
+            { name: "Gym", icon: require("../assets/gym.png") },
+            { name: "Park", icon: require("../assets/park.png") },
+            { name: "Stationary", icon: require("../assets/stationary.png") },
+          ].map((service, index) => (
+            <TouchableOpacity key={index} style={styles.serviceCard}>
+              <Image source={service.icon} style={styles.serviceIcon} />
+              <Text style={styles.serviceText}>{service.name}</Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
 
-        {/* Hostels Nearby */}
+        {/* Nearby Hostels */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hostels Nearby</Text>
           <TouchableOpacity onPress={() => setShowAllNearby(!showAllNearby)}>
@@ -225,57 +230,60 @@ export default function HomePage() {
 
         {displayedNearby.map((item) => (
           <TouchableOpacity
-            key={item.id}
+            key={item._id}
             style={styles.nearbyCard}
             onPress={() => navigation.navigate("HostelDetails", { hostel: item })}
             activeOpacity={0.9}
           >
-            <Image source={item.image} style={styles.nearbyImage} />
+            {item.images[0] ? (
+              <Image source={{ uri: item.images[0] }} style={styles.nearbyImage} />
+            ) : (
+              <Image source={require("../assets/hostel1.png")} style={styles.nearbyImage} />
+            )}
             <View style={{ flex: 1, marginLeft: wp("3%") }}>
               <Text style={styles.nearbyName}>{item.name}</Text>
-              <Text style={styles.nearbyLocation}>{item.location}</Text>
+              <Text style={styles.nearbyLocation}>{item.address}</Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.nearbyPrice}>{item.price}</Text>
-              <Text style={styles.hostelRating}>⭐ {item.rating}</Text>
+              <Text style={styles.nearbyPrice}>₹{item.roomRent}</Text>
+               <Text style={styles.overlayRating}>⭐ {item.rating}</Text>
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
-      {/* ✅ Bottom Navbar Fixed */}
+      {/* Bottom Navbar */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate("HomePage")}>
-          <Image
-            source={require("../assets/home.png")}
-            style={[styles.footerIcon, { tintColor: "#000" }]}
-          />
+          <Image source={require("../assets/home.png")} style={[styles.footerIcon, { tintColor: "#000" }]} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("SearchPage", { hostelsData })}>
-          <Image
-            source={require("../assets/Search.png")}
-            style={styles.footerIcon}
-          />
-        </TouchableOpacity>
+      <TouchableOpacity
+  onPress={() => {
+    if (allHostels.length > 0) {
+      const hostelsByCategory = {
+        boys: allHostels.filter((h) => h.category === "boys"),
+        girls: allHostels.filter((h) => h.category === "girls"),
+        coliving: allHostels.filter((h) => h.category === "coliving"),
+      };
+
+      navigation.navigate("SearchPage", { hostelsData: hostelsByCategory });
+    } else {
+      Alert.alert("Hostels are still loading...");
+    }
+  }}
+>
+  <Image source={require("../assets/Search.png")} style={styles.footerIcon} />
+</TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate("Bookings")}>
-          <Image
-            source={require("../assets/document.png")}
-            style={styles.footerIcon}
-          />
+          <Image source={require("../assets/document.png")} style={styles.footerIcon} />
         </TouchableOpacity>
-
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Image
-            source={require("../assets/user.png")}
-            style={styles.footerIcon}
-          />
+          <Image source={require("../assets/user.png")} style={styles.footerIcon} />
         </TouchableOpacity>
       </View>
-      <BottomNavBar />
 
-
-      {/* ✅ Filter Modal */}
+      {/* Filter Modal */}
       <FilterModal visible={filterVisible} onClose={() => setFilterVisible(false)} />
     </View>
   );

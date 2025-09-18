@@ -22,7 +22,7 @@ export default function SearchPage() {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { hostelsData } = route.params;
+   const { hostelsData = { boys: [], girls: [], coliving: [] } } = route.params || {};
 
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("boys");
@@ -106,16 +106,25 @@ export default function SearchPage() {
               navigation.navigate("HostelDetails", { hostel: item })
             }
           >
-            <Image source={item.image} style={styles.hostelImage} />
+             <Image
+                source={
+                  item.images && item.images[0]
+                    ? { uri: item.images[0] }
+                    : require("../assets/hostel1.png")
+                }
+                style={styles.hostelImage}
+              />
             <View style={{ flex: 1, marginLeft: wp("3%") }}>
               <Text style={styles.hostelName}>{item.name}</Text>
-              {item.location && (
-                <Text style={styles.hostelLocation}>{item.location}</Text>
+              {item.address && (
+                <Text style={styles.hostelLocation}>{item.address}</Text>
               )}
             </View>
             <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.hostelPrice}>{item.price}</Text>
-              <Text style={styles.hostelRating}>⭐ {item.rating}</Text>
+              <Text style={styles.hostelPrice}>
+            ₹{item.roomRent || item.price || item.rent || item.monthlyRent || "N/A"}
+            </Text>
+              <Text style={styles.hostelRating}>⭐ {item.rating }</Text>
             </View>
           </TouchableOpacity>
         )}

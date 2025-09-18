@@ -29,7 +29,7 @@ export default function Admin() {
 
   const fetchRecentHost = async () => {
     try {
-      const response = await axios.get('http://192.168.1.3:5000/api/admin/recent'); // Replace <YOUR_IP> with your backend IP
+      const response = await axios.get('http://192.168.1.5:5000/api/admin/recent'); // Replace <YOUR_IP> with your backend IP
       setHost(response.data);
       setLoading(false);
     } catch (error) {

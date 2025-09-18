@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import {
   widthPercentageToDP as wp,
