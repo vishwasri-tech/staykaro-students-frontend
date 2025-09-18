@@ -9,7 +9,7 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView,              
   ScrollView,
   Platform,
 } from 'react-native';

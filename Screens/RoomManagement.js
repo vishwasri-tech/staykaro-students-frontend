@@ -13,248 +13,239 @@ import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
+const filterOptions = {
+  floor: ["1", "2", "3", "4", "5"],
+  block: ["A", "B", "C"],
+  type: [
+    "1-bed AC",
+    "2-bed AC",
+    "3-bed AC",
+    "1-bed Non-AC",
+    "2-bed Non-AC",
+    "3-bed Non-AC",
+  ],
+};
+
+// Sample students
+const studentsList = ["Ravi", "Kiran", "Priya", "Asha", "Ramesh", "Neha"];
+
 const roomsData = [
-  {
-    id: 1,
-    roomNo: "Room No 1",
-    beds: "2-bed AC",
-    status: "Occupied",
-    students: ["Rohan", "Singh"],
-  },
-  {
-    id: 2,
-    roomNo: "Room No 2",
-    beds: "1-bed AC",
-    status: "Vacant",
-    students: [],
-  },
-  {
-    id: 3,
-    roomNo: "Room No 3",
-    beds: "2-bed AC",
-    status: "Maintenance",
-    students: [],
-  },
-  {
-    id: 4,
-    roomNo: "Room No 4",
-    beds: "2-bed AC",
-    status: "Vacant",
-    students: [],
-  },
+  { id: 1, roomNo: "A1", type: "2-bed AC", floor: "1", status: "Occupied", students: ["Rohan", "Singh"] },
+  { id: 2, roomNo: "A2", type: "1-bed AC", floor: "3", status: "Vacant", students: [] },
+  { id: 3, roomNo: "B3", type: "2-bed AC", floor: "3", status: "Maintenance", students: [] },
+  { id: 4, roomNo: "C4", type: "2-bed Non-AC", floor: "4", status: "Vacant", students: [] },
+  { id: 5, roomNo: "B2", type: "3-bed Non-AC", floor: "2", status: "Vacant", students: [] },
+  { id: 6, roomNo: "C1", type: "1-bed Non-AC", floor: "1", status: "Occupied", students: ["Kiran"] },
 ];
 
 export default function RoomManagement() {
-  const [rooms, setRooms] = useState(roomsData);
-
-  // Modal states for filters
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [filterType, setFilterType] = useState("");
-  const [selectedValue, setSelectedValue] = useState("");
-
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState({
+    floor: null,
+    block: null,
+    type: null,
+  });
+
+  const [assignModalVisible, setAssignModalVisible] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState("");
 
-  const handleAssignStudent = () => {
-    if (selectedRoom && selectedStudent) {
-      setRooms((prev) =>
-        prev.map((room) =>
-          room.id === selectedRoom.id
-            ? { ...room, students: [...room.students, selectedStudent] }
-            : room
-        )
-      );
-      setSelectedStudent("");
-      setModalVisible(false);
-    }
-  };
-
-  const openAssignModal = (room) => {
-    setSelectedRoom(room);
+  const openModal = (type) => {
+    setModalType(type);
     setModalVisible(true);
   };
 
-  const openFilterModal = (type) => {
-    setFilterType(type);
-    setFilterModalVisible(true);
+  const handleSelect = (value) => {
+    setSelectedFilters({ ...selectedFilters, [modalType]: value });
+    setModalVisible(false);
+  };
+
+  const clearFilter = (type) => {
+    setSelectedFilters({ ...selectedFilters, [type]: null });
+  };
+
+  const getFilteredRooms = () => {
+    return roomsData.filter((room) => {
+      return (
+        (!selectedFilters.floor || room.floor === selectedFilters.floor) &&
+        (!selectedFilters.type || room.type === selectedFilters.type) &&
+        (!selectedFilters.block || room.roomNo.startsWith(selectedFilters.block))
+      );
+    });
+  };
+
+  const handleAssignStudent = () => {
+    if (selectedRoom && selectedStudent) {
+      selectedRoom.students.push(selectedStudent);
+      selectedRoom.status = "Occupied"; // Mark occupied once student is added
+      setAssignModalVisible(false);
+      setSelectedStudent("");
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Room Management</Text>
 
-      {/* Filters */}
-      <View style={styles.filters}>
-        <TouchableOpacity
-          style={styles.dropdownBtn}
-          onPress={() => openFilterModal("Floor No")}
-        >
-          <Text style={styles.dropdownText}>
-            {selectedValue && filterType === "Floor No"
-              ? selectedValue
-              : "Floor No"}
-          </Text>
-          <Ionicons name="chevron-down-outline" size={16} color="#555" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.dropdownBtn}
-          onPress={() => openFilterModal("Block")}
-        >
-          <Text style={styles.dropdownText}>
-            {selectedValue && filterType === "Block" ? selectedValue : "Block"}
-          </Text>
-          <Ionicons name="chevron-down-outline" size={16} color="#555" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.dropdownBtn}
-          onPress={() => openFilterModal("Type")}
-        >
-          <Text style={styles.dropdownText}>
-            {selectedValue && filterType === "Type" ? selectedValue : "Type"}
-          </Text>
-          <Ionicons name="chevron-down-outline" size={16} color="#555" />
-        </TouchableOpacity>
+      {/* Filter Buttons */}
+      <View style={styles.filterRow}>
+        {["floor", "block", "type"].map((filterKey) => (
+          <TouchableOpacity
+            key={filterKey}
+            style={styles.filterBtn}
+            onPress={() => openModal(filterKey)}
+          >
+            <Text style={{ fontSize: 13 }}>
+              {selectedFilters[filterKey]
+                ? `${filterKey === "floor" ? "Floor" : filterKey === "block" ? "Block" : "Type"}: ${selectedFilters[filterKey]}`
+                : filterKey === "floor"
+                ? "Floor No"
+                : filterKey === "block"
+                ? "Block"
+                : "Type"}
+            </Text>
+            <Ionicons name="chevron-down" size={16} />
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Rooms */}
-      <ScrollView
-        contentContainerStyle={styles.roomsContainer}
-        showsVerticalScrollIndicator={false}
+      {/* Clear All Filters */}
+      <TouchableOpacity
+        style={styles.clearBtn}
+        onPress={() =>
+          setSelectedFilters({ floor: null, block: null, type: null })
+        }
       >
-        {rooms.map((room) => (
-          <View key={room.id} style={styles.card}>
-            <Text style={styles.roomTitle}>{room.roomNo}</Text>
-            <Text style={styles.roomSubtitle}>{room.beds}</Text>
+        <Text style={{ color: "white" }}>Clear All Filters</Text>
+      </TouchableOpacity>
 
-            {/* Status */}
+      {/* Rooms */}
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {getFilteredRooms().map((room) => (
+          <View key={room.id} style={styles.card}>
+            <Text style={styles.roomTitle}>Room No-{room.roomNo}</Text>
+            <Text>{room.type}</Text>
+            <Text>Floor No {room.floor}</Text>
+
             <View
               style={[
                 styles.statusBadge,
-                room.status === "Occupied"
-                  ? styles.occupied
-                  : room.status === "Vacant"
-                  ? styles.vacant
-                  : styles.maintenance,
+                {
+                  backgroundColor:
+                    room.status === "Occupied"
+                      ? "#e74c3c"
+                      : room.status === "Vacant"
+                      ? "#2ecc71"
+                      : "#f1c40f",
+                },
               ]}
             >
               <Text style={styles.statusText}>{room.status}</Text>
             </View>
 
-            {/* Students */}
             {room.students.length > 0 && (
-              <View style={styles.studentsList}>
-                <Text style={styles.studentsTitle}>Assigned Students:</Text>
+              <View style={{ marginTop: 6 }}>
+                <Text>Assigned Students:</Text>
                 {room.students.map((s, i) => (
-                  <Text key={i}>{`${i + 1}. ${s}`}</Text>
+                  <Text key={i}>{i + 1}. {s}</Text>
                 ))}
               </View>
             )}
 
-            <TouchableOpacity
-              style={styles.assignBtn}
-              onPress={() => openAssignModal(room)}
-            >
-              <Text style={styles.assignBtnText}>Assign Student</Text>
-            </TouchableOpacity>
+            {room.status !== "Occupied" && (
+              <TouchableOpacity
+                style={styles.assignBtn}
+                onPress={() => {
+                  setSelectedRoom(room);
+                  setAssignModalVisible(true);
+                }}
+              >
+                <Text style={{ color: "white" }}>Assign Student</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ))}
       </ScrollView>
 
-      {/* Assign Student Modal */}
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
+      {/* Filter Modal */}
+      <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Assign Student</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={selectedStudent}
-                onValueChange={(val) => setSelectedStudent(val)}
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>
+              {modalType === "floor"
+                ? "Select Floor"
+                : modalType === "block"
+                ? "Select Block"
+                : "Select Type"}
+            </Text>
+
+            {filterOptions[modalType]?.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.modalOption}
+                onPress={() => handleSelect(item)}
               >
-                <Picker.Item label="Select Student" value="" />
-                <Picker.Item label="Rohan" value="Rohan" />
-                <Picker.Item label="Singh" value="Singh" />
-                <Picker.Item label="Amit" value="Amit" />
-                <Picker.Item label="Priya" value="Priya" />
-              </Picker>
-            </View>
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            ))}
+
+            {selectedFilters[modalType] && (
+              <TouchableOpacity
+                style={[styles.modalOption, { backgroundColor: "#f8d7da" }]}
+                onPress={() => {
+                  clearFilter(modalType);
+                  setModalVisible(false);
+                }}
+              >
+                <Text>Clear {modalType}</Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
-              style={styles.confirmBtn}
-              onPress={handleAssignStudent}
-            >
-              <Text style={styles.confirmText}>Confirm</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.cancelBtn}
+              style={[styles.modalOption, { backgroundColor: "#ddd" }]}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={styles.cancelText}>Cancel</Text>
+              <Text>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      {/* Filter Picker Modal */}
-      <Modal
-        transparent={true}
-        visible={filterModalVisible}
-        animationType="fade"
-        onRequestClose={() => setFilterModalVisible(false)}
-      >
+      {/* Assign Student Modal */}
+      <Modal visible={assignModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>{filterType}</Text>
+          <View style={styles.assignCard}>
+            <Text style={styles.modalTitle}>Assign Student</Text>
+
             <View style={styles.pickerWrapper}>
               <Picker
-                selectedValue={selectedValue}
-                onValueChange={(val) => setSelectedValue(val)}
+                selectedValue={selectedStudent}
+                onValueChange={(itemValue) => setSelectedStudent(itemValue)}
               >
-                <Picker.Item label={`Select ${filterType}`} value="" />
-                {filterType === "Floor No" && (
-                  <>
-                    <Picker.Item label="Floor 1" value="Floor 1" />
-                    <Picker.Item label="Floor 2" value="Floor 2" />
-                    <Picker.Item label="Floor 3" value="Floor 3" />
-                  </>
-                )}
-                {filterType === "Block" && (
-                  <>
-                    <Picker.Item label="Block A" value="Block A" />
-                    <Picker.Item label="Block B" value="Block B" />
-                    <Picker.Item label="Block C" value="Block C" />
-                  </>
-                )}
-                {filterType === "Type" && (
-                  <>
-                    <Picker.Item label="1-bed AC" value="1-bed AC" />
-                    <Picker.Item label="2-bed AC" value="2-bed AC" />
-                    <Picker.Item label="3-bed Non-AC" value="3-bed Non-AC" />
-                  </>
-                )}
+                <Picker.Item label="Select Student" value="" />
+                {studentsList.map((student, index) => (
+                  <Picker.Item key={index} label={student} value={student} />
+                ))}
               </Picker>
             </View>
 
             <TouchableOpacity
-              style={styles.confirmBtn}
-              onPress={() => setFilterModalVisible(false)}
+              style={[
+                styles.confirmBtn,
+                { backgroundColor: selectedStudent ? "#3498db" : "#ccc" },
+              ]}
+              onPress={handleAssignStudent}
+              disabled={!selectedStudent}
             >
-              <Text style={styles.confirmText}>Apply</Text>
+              <Text style={{ color: "white" }}>Confirm</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.cancelBtn}
-              onPress={() => setFilterModalVisible(false)}
+              style={[styles.modalOption, { backgroundColor: "#ddd", marginTop: 10 }]}
+              onPress={() => setAssignModalVisible(false)}
             >
-              <Text style={styles.cancelText}>Cancel</Text>
+              <Text>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -264,104 +255,59 @@ export default function RoomManagement() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-    paddingTop: 50,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 20,
-  },
-  filters: {
+  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  title: { fontSize: 18,marginTop:29, fontWeight: "bold", marginBottom: 12 },
+  filterRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 12,
   },
-  dropdownBtn: {
+  filterBtn: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    minWidth: width * 0.25,
-    backgroundColor: "#fff",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-  },
-  dropdownText: {
-    fontSize: 14,
-    color: "#333",
-    marginRight: 6,
-  },
-  roomsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    width: width / 3.5,
     justifyContent: "space-between",
-    paddingBottom: 100,
   },
+  clearBtn: {
+    backgroundColor: "#e74c3c",
+    padding: 8,
+    borderRadius: 6,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  scroll: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   card: {
-    width: width * 0.43,
-    height: 210,
-    backgroundColor: "#fff",
+    width: width / 2.44 + 10,
     padding: 12,
-    borderRadius: 12,
-    marginBottom: 20,
-    elevation: 3,
+    backgroundColor: "#fff",
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 12,
   },
-  roomTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  roomSubtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 8,
-  },
+  roomTitle: { fontWeight: "bold", fontSize: 16, marginBottom: 4 },
   statusBadge: {
     alignSelf: "flex-start",
-    borderRadius: 12,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    paddingHorizontal: 12,
-    marginBottom: 8,
+    borderRadius: 6,
+    marginTop: 6,
   },
-  statusText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 12,
-  },
-  occupied: { backgroundColor: "#E53935" },
-  vacant: { backgroundColor: "#43A047" },
-  maintenance: { backgroundColor: "#FBC02D" },
-  studentsList: {
-    marginBottom: 8,
-  },
-  studentsTitle: {
-    fontWeight: "600",
-    fontSize: 13,
-  },
+  statusText: { color: "#fff", fontSize: 12 },
   assignBtn: {
-    backgroundColor: "#4285F4",
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginTop: 5,
+    marginTop: 10,
+    backgroundColor: "#3498db",
+    padding: 8,
+    borderRadius: 6,
     alignItems: "center",
-  },
-  assignBtnText: {
-    color: "#fff",
-    fontWeight: "600",
   },
   modalOverlay: {
     flex: 1,
@@ -369,46 +315,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  modalBox: {
+  modalCard: {
+    width: "70%",
     backgroundColor: "#fff",
-    width: width * 0.8,
-    borderRadius: 12,
+    borderRadius: 10,
+    padding: 16,
+  },
+  assignCard: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
     padding: 20,
     alignItems: "center",
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 15,
+  modalTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 12 },
+  modalOption: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+    width: "100%",
+    alignItems: "center",
   },
   pickerWrapper: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 20,
+    borderRadius: 6,
     width: "100%",
+    marginBottom: 16,
   },
   confirmBtn: {
-    backgroundColor: "#4285F4",
-    paddingVertical: 10,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 6,
     alignItems: "center",
     width: "100%",
-    marginBottom: 10,
-  },
-  confirmText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  cancelBtn: {
-    backgroundColor: "#ddd",
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    width: "100%",
-  },
-  cancelText: {
-    color: "#333",
-    fontWeight: "600",
   },
 });

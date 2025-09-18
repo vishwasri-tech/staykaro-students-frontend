@@ -404,12 +404,12 @@ const styles = StyleSheet.create({
   },
   structureInput: {
     flex: 1,
-    height: 36,
+    height: 45,
     backgroundColor: '#f7f7f7',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     fontSize: 14,
   },
 
