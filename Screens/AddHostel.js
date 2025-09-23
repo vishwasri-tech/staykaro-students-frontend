@@ -18,7 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
 const { width } = Dimensions.get('window');
-const API_BASE = 'http://192.168.1.5:5000/api/hostel';
+const API_BASE = 'http://192.168.1.2:5000/api/hostel';
 
 const facilitiesList = ['Wi-fi', 'Mess', 'Laundry', 'Water Heater', 'CCTV'];
 const hostelTypes = ['Boys', 'Girls', 'Co-live'];

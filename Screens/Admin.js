@@ -29,7 +29,7 @@ export default function Admin() {
 
   const fetchRecentHost = async () => {
     try {
-      const response = await axios.get('http://192.168.1.5:5000/api/admin/recent'); // Replace <YOUR_IP> with your backend IP
+      const response = await axios.get('http://192.168.1.2:5000/api/admin/recent'); // Replace <YOUR_IP> with your backend IP
       setHost(response.data);
       setLoading(false);
     } catch (error) {
@@ -40,7 +40,7 @@ export default function Admin() {
 
   const updateHostLocation = async (hostId, latitude, longitude, address) => {
     try {
-      const response = await axios.put(`http://192.168.1.3:5000/api/admin/update-location/${hostId}`, {
+      const response = await axios.put(`http://192.168.1.2:5000/api/admin/update-location/${hostId}`, {
         latitude,
         longitude,
         address,

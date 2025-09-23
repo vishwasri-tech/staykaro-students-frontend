@@ -56,31 +56,51 @@ export default function HostelDetails() {
   const locPin = require("../assets/location.png");
 
   // gallery data fallback
-  const gallery =
-    Array.isArray(hostel.gallery) && hostel.gallery.length > 0
-      ? hostel.gallery
-      : [hostel.image, hostel.image, hostel.image, hostel.image, hostel.image];
+  const gallery = hostel.images && hostel.images.length > 0 ? hostel.images : [require("../assets/hostel1.png")];
+  const galleryImages = gallery.map(img => (typeof img === "number" ? img : { uri: img }));
 
-  // format for ImageViewing
-  const galleryImages = gallery.map((img) =>
-    typeof img === "number" ? img : { uri: img }
-  );
-
-  const THUMB_COUNT = 4;
-
-  function openViewer(index = 0) {
+  const openViewer = (index = 0) => {
     setViewerIndex(index);
     setViewerVisible(true);
-  }
+  };
+
+  // const gallery =
+  //   Array.isArray(hostel.gallery) && hostel.gallery.length > 0
+  //     ? hostel.gallery
+  //     : [hostel.image, hostel.image, hostel.image, hostel.image, hostel.image];
+
+  // // format for ImageViewing
+  // const galleryImages = gallery.map((img) =>
+  //   typeof img === "number" ? img : { uri: img }
+  // );
+
+  // const THUMB_COUNT = 4;
+
+  // function openViewer(index = 0) {
+  //   setViewerIndex(index);
+  //   setViewerVisible(true);
+  // }
 
   // sharing options list
-  const sharingOptions = [
+const sharingOptions = hostel.sharingOptions || [
     { id: 1, label: "Single Sharing", price: 7500, status: "available" },
     { id: 2, label: "2 Sharing", price: 5800, status: "few" },
     { id: 3, label: "3 Sharing", price: 4500, status: "available" },
     { id: 4, label: "4 Sharing", price: 4000, status: "available" },
     { id: 5, label: "5 Sharing", price: 3500, status: "full" },
   ];
+  const handleSelectSharing = (opt) => {
+    if (opt.status === "full") {
+      if (Platform.OS === "android") {
+        ToastAndroid.show("This sharing is not available", ToastAndroid.SHORT);
+      } else {
+        Alert.alert("Unavailable", "This sharing is not available");
+      }
+      return;
+    }
+    setSelectedSharing(opt);
+    setSharingVisible(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,7 +111,11 @@ export default function HostelDetails() {
         {/* Top image with save button */}
         <View>
           <TouchableOpacity activeOpacity={0.9} onPress={() => openViewer(0)}>
-            <Image source={hostel.image} style={styles.topImage} />
+            <Image
+              source={hostel.images && hostel.images[0] ? { uri: hostel.images[0] } : require("../assets/hostel1.png")}
+              style={styles.topImage}
+            />
+
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -120,8 +144,8 @@ export default function HostelDetails() {
           <View style={styles.locationInline}>
             <Image source={locPin} style={styles.locIconSmall} />
             <Text style={styles.locationText}>
-              {hostel.location ?? "Begumpet, Hyderabad"}
-            </Text>
+  {hostel.location || hostel.address || hostel.city || "Location not specified"}
+</Text>
           </View>
 
           {/* rating */}
@@ -147,8 +171,7 @@ export default function HostelDetails() {
 
           <Text style={styles.sectionTitle}>Description</Text>
           <Text style={styles.description} numberOfLines={3}>
-            {hostel.description ||
-              "Hostel means a residential facility designed to provide accommodation to students or individuals, consisting of rooms, common areas."}
+           {hostel.description || "No description available."}
           </Text>
           <TouchableOpacity
             onPress={() =>
@@ -159,26 +182,15 @@ export default function HostelDetails() {
           </TouchableOpacity>
 
           {/* Gallery */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.galleryRow}
-          >
-            {gallery.slice(0, THUMB_COUNT).map((img, idx) => {
-              const isLastShown =
-                idx === THUMB_COUNT - 1 && gallery.length > THUMB_COUNT;
+           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryRow}>
+            {gallery.slice(0, 4).map((img, idx) => {
+              const isLast = idx === 3 && gallery.length > 4;
               return (
-                <TouchableOpacity
-                  key={idx}
-                  activeOpacity={0.85}
-                  onPress={() => openViewer(idx)}
-                >
-                  <Image source={img} style={styles.galleryImage} />
-                  {isLastShown && (
+                <TouchableOpacity key={idx} onPress={() => openViewer(idx)}>
+                  <Image source={typeof img === "number" ? img : { uri: img }} style={styles.galleryImage} />
+                  {isLast && (
                     <View style={styles.moreOverlay}>
-                      <Text style={styles.moreOverlayText}>
-                        +{gallery.length - THUMB_COUNT}
-                      </Text>
+                      <Text style={styles.moreOverlayText}>+{gallery.length - 4}</Text>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -221,7 +233,6 @@ export default function HostelDetails() {
               onPress={() => {
   navigation.navigate("BookingPayment", { selectedSharing });
 }}
-
             >
               <Text style={styles.bookText}>Book now</Text>
             </TouchableOpacity>

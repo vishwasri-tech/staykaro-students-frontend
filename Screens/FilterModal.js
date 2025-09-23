@@ -261,6 +261,28 @@ export default function FilterModal({ visible, onClose }) {
   const toggleFacility = (key) => {
     setFacilities({ ...facilities, [key]: !facilities[key] });
   };
+      const applyFilters = async () => {
+  try {
+    const res = await fetch("http://192.168.1.2:5000/api/filter", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ budget, distance, facilities: filters }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      // Optional: filter by selected category on frontend
+      const categoryFiltered = data.data.filter(item => item.category === selectedCategory);
+      setHostels(categoryFiltered);
+      setFilterVisible(false);
+    } else {
+      Alert.alert("Error", "Failed to fetch filtered hostels");
+    }
+  } catch (err) {
+    console.error(err);
+    Alert.alert("Error", "Something went wrong");
+  }
+};
 
   return (
     <Modal visible={visible} animationType="slide" transparent>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Modal,
   ScrollView,
+  Alert,
 } from "react-native";
 import Slider from "@react-native-community/slider"; // ✅ Slider for budget & distance
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -26,6 +27,7 @@ export default function SearchPage() {
 
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("boys");
+  const [hostels, setHostels] = useState(hostelsData[selectedCategory] || []);
   const [filterVisible, setFilterVisible] = useState(false); // ✅ controls popup
   const [budget, setBudget] = useState(6999);
   const [distance, setDistance] = useState(10);
@@ -39,14 +41,46 @@ export default function SearchPage() {
     washingmachine: false,
   });
 
-  const categoryData = hostelsData[selectedCategory] || [];
-  const filteredData = categoryData.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-  );
 
   const toggleFilter = (key) => {
     setFilters({ ...filters, [key]: !filters[key] });
   };
+  const handleCategoryChange = (cat) => {
+    setSelectedCategory(cat);
+    setHostels(hostelsData[cat] || []);
+  };
+     const applyFilters = async () => {
+    try {
+      const res = await fetch("http://192.168.1.2:5000/api/filter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          budget,
+          distance,
+          facilities: filters,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Filter by category after backend filter
+        const categoryFiltered = data.data.filter(
+          (item) => item.category === selectedCategory
+        );
+        setHostels(categoryFiltered);
+        setFilterVisible(false);
+      } else {
+        Alert.alert("Error", "Failed to fetch filtered hostels");
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error", "Something went wrong");
+    }
+  };
+
+  // Filter by search text
+  const filteredData = hostels.filter((item) =>
+    item.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -76,7 +110,7 @@ export default function SearchPage() {
             style={
               selectedCategory === cat ? styles.categoryActive : styles.category
             }
-            onPress={() => setSelectedCategory(cat)}
+            onPress={() => handleCategoryChange(cat)}
           >
             <Text
               style={
@@ -97,38 +131,38 @@ export default function SearchPage() {
 
       {/* 🏠 Hostel List */}
       <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.hostelCard}
-            onPress={() =>
-              navigation.navigate("HostelDetails", { hostel: item })
-            }
-          >
-             <Image
-                source={
-                  item.images && item.images[0]
-                    ? { uri: item.images[0] }
-                    : require("../assets/hostel1.png")
-                }
-                style={styles.hostelImage}
-              />
-            <View style={{ flex: 1, marginLeft: wp("3%") }}>
-              <Text style={styles.hostelName}>{item.name}</Text>
-              {item.address && (
-                <Text style={styles.hostelLocation}>{item.address}</Text>
-              )}
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.hostelPrice}>
-            ₹{item.roomRent || item.price || item.rent || item.monthlyRent || "N/A"}
-            </Text>
-              <Text style={styles.hostelRating}>⭐ {item.rating }</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+  data={filteredData}
+  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.hostelCard}
+      onPress={() =>
+        navigation.navigate("HostelDetails", { hostel: item })
+      }
+    >
+      <Image
+        source={
+          item.images && item.images[0]
+            ? { uri: item.images[0] }
+            : require("../assets/hostel1.png")
+        }
+        style={styles.hostelImage}
       />
+      <View style={{ flex: 1, marginLeft: wp("3%") }}>
+        <Text style={styles.hostelName}>{item.name}</Text>
+        {item.address && (
+          <Text style={styles.hostelLocation}>{item.address}</Text>
+        )}
+      </View>
+      <View style={{ alignItems: "flex-end" }}>
+        <Text style={styles.hostelPrice}>
+          ₹{item.roomRent || item.price || item.rent || item.monthlyRent || "N/A"}
+        </Text>
+        <Text style={styles.hostelRating}>⭐ {item.rating}</Text>
+      </View>
+    </TouchableOpacity>
+  )}
+/>
 
       {/* ✅ Filter Popup Modal */}
       <Modal
@@ -148,10 +182,7 @@ export default function SearchPage() {
         <View style={styles.popupContainer}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Apply Button */}
-            <TouchableOpacity
-              style={styles.applyButton}
-              onPress={() => setFilterVisible(false)}
-            >
+            <TouchableOpacity style={styles.applyButton} onPress={applyFilters}>
               <Text style={styles.applyButtonText}>Apply Filters</Text>
             </TouchableOpacity>
 

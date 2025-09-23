@@ -55,7 +55,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchHostels = async () => {
       try {
-        const response = await fetch("http://192.168.1.5:5000/api/hostel");
+        const response = await fetch("http://192.168.1.2:5000/api/hostel");
         const data = await response.json();
 
         // Normalize type → category
