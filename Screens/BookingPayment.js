@@ -12,8 +12,12 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as DocumentPicker from "expo-document-picker";
+import axios from "axios";
+
 
 const { width, height } = Dimensions.get("window");
 const baseWidth = 375;
@@ -31,6 +35,7 @@ export default function BookingPayment({ navigation }) {
     email: "",
     college: "",
   });
+  const [file, setFile] = useState(null);
 
   const pricePerMonth = 7500;
   const discount = 800;
@@ -65,6 +70,66 @@ export default function BookingPayment({ navigation }) {
   // Slightly raised footer offset
   const footerBottom = insets.bottom + normalize(12);
 
+    // -------- VALIDATION FUNCTION --------
+  const validateForm = () => {
+    const nameRegex = /^[A-Za-z\s]{8,}$/; // at least 8 letters, no numbers
+    const mobileRegex = /^\d{10}$/; // exactly 10 digits
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // simple email validation
+
+    if (!nameRegex.test(form.fullName)) {
+      Alert.alert("Invalid Full Name", "Full Name must be at least 8 characters and contain no numbers.");
+      return false;
+    }
+
+    if (!mobileRegex.test(form.mobile)) {
+      Alert.alert("Invalid Mobile No", "Mobile number must be exactly 10 digits.");
+      return false;
+    }
+
+    if (!emailRegex.test(form.email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      return false;
+    }
+
+    return true;
+  };
+
+  // -------- HANDLE SUBMIT --------
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("fullName", form.fullName);
+      formData.append("mobile", form.mobile);
+      formData.append("email", form.email);
+      formData.append("college", form.college);
+
+      if (file) {
+        formData.append("idProof", {
+          uri: file.uri,
+          type: file.mimeType || "application/octet-stream",
+          name: file.name,
+        });
+      }
+
+      const res = await axios.post(
+        "http://192.168.1.2:5000/api/booking/create",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      if (res.data.success) {
+        Alert.alert("Success", res.data.message);
+        setStep(2);
+      } else {
+        Alert.alert("Failed", res.data.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error(" Booking error:", err);
+      Alert.alert("Error", err.response?.data?.error || "Server error");
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -119,11 +184,29 @@ export default function BookingPayment({ navigation }) {
             <Text style={[styles.label, { marginTop: normalize(6) }]}>
               Upload ID Proof <Text style={styles.smallHint}>(Aadhaar, PAN, College ID)</Text>
             </Text>
-            <TouchableOpacity style={styles.uploadBtn} activeOpacity={0.85}>
-              <Text style={styles.uploadText}>Upload File</Text>
-            </TouchableOpacity>
+               <TouchableOpacity
+              style={styles.uploadBtn}
+              activeOpacity={0.85}
+              onPress={async () => {
+                try {
+                  const result = await DocumentPicker.getDocumentAsync({
+                    type: "*/*",
+                  });
+                  if (result.canceled) return;
 
-            {/* NOTE: Duration removed from Personal Details per request */}
+                  const doc = result.assets[0];
+                  setFile(doc);
+                  Alert.alert("File Selected", doc.name);
+                } catch (err) {
+                  Alert.alert("Error", "Failed to pick document");
+                  console.error(err);
+                }
+              }}
+            >
+              <Text style={styles.uploadText}>
+                {file ? file.name : "Upload File"}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -218,7 +301,7 @@ export default function BookingPayment({ navigation }) {
               activeOpacity={0.85}
               onPress={() => {
                 // cancel action
-                navigation.goBack ? navigation.goBack() : null;
+                 navigation.goBack ? navigation.goBack() : null;
               }}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -227,7 +310,7 @@ export default function BookingPayment({ navigation }) {
             <TouchableOpacity
               style={styles.primaryButtonFooter}
               activeOpacity={0.9}
-              onPress={() => setStep(2)}
+              onPress={handleSubmit}
             >
               <Text style={styles.primaryButtonText}>Save and Next</Text>
             </TouchableOpacity>
